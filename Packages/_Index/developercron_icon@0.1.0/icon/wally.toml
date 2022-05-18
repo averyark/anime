@@ -1,0 +1,8 @@
+[package]
+name = "developercron/icon"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+description = "forked from 1ForeverHD/TopbarPlus"
+realm = "shared"
+
+[dependencies]

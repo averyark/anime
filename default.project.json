@@ -1,0 +1,41 @@
+{
+  "name": "Anime Git",
+  "tree": {
+    "$className": "DataModel",
+
+    "ReplicatedStorage": {
+      "shared": {
+        "$path": "src/shared"
+      },
+      "utilities": {
+        "$path": "src/utilities"
+      },
+      "packages": {
+        "$path": "Packages"
+      },
+      "serverPackages": {
+        "$path": "ServerPackages"
+      }
+    },
+
+    "ServerScriptService": {
+      "server": {
+        "$path": "src/server"
+      },
+      "server_init": {
+        "$path": "src/server_init.server.lua"
+      }
+    },
+
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "client": {
+          "$path": "src/client"
+        },
+        "client_init": {
+          "$path": "src/client_init.client.lua"
+        }
+      }
+    }
+  }
+}
