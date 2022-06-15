@@ -2,6 +2,4 @@
 -- Arkizen
 -- 09/06/2022
 
-return function ()
-    
-end
+return function() end

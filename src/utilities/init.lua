@@ -3,6 +3,8 @@
 -- Arkizen
 -- 19/05/2022
 
+-- Ignore the Um object, and don't use it for production pls ~ark
+
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -23,43 +25,43 @@ local isFolder = t.instanceIsA("Folder")
 local isModule = t.instanceIsA("ModuleScript")
 local isFunction = t.typeof("function")
 
-local utilWarn = function(... : string | number)
-    warn("utilWarn:", ..., debug.traceback("\n\n", 2))
+local utilWarn = function(...: string | number)
+	warn("utilWarn:", ..., debug.traceback("\n\n", 2))
 end
 
-local isSpecFile = function(module : ModuleScript)
-    assert(isModule(module), "utilError: expected module\n")
-    return module.Name:match("(.+)%.spec$")
+local isSpecFile = function(module: ModuleScript)
+	assert(isModule(module), "utilError: expected module\n")
+	return module.Name:match("(.+)%.spec$")
 end
 
-local isTypeFile = function(module : ModuleScript)
-    assert(isModule(module), "utilError: expected module\n")
-    return module.Name:match("(.+)%.type$")
+local isTypeFile = function(module: ModuleScript)
+	assert(isModule(module), "utilError: expected module\n")
+	return module.Name:match("(.+)%.type$")
 end
 
-local isSpecialFile = function(module : ModuleScript)
-    assert(isModule(module), "utilError: expected module\n")
-    return isTypeFile(module) or isSpecFile(module);
+local isSpecialFile = function(module: ModuleScript)
+	assert(isModule(module), "utilError: expected module\n")
+	return isTypeFile(module) or isSpecFile(module)
 end
 
 local run = function()
-    for _, module in script:GetChildren() do
-        if isModule(module) and not isSpecialFile(module) then
-            cacheUtilitiesMethods[module.Name] = module
-            local expand = require(module)
-            cacheUtilitiesLib[module.Name] = expand
-            for key, value in expand do
-                if cacheUtilitiesMethods[key] then
-                    --utilWarn("Method shadowing;", key, module.Name)
-                    continue;
-                end
-               if not isFunction(value) then
-                  continue;
-               end
-                cacheUtilitiesMethods[key] = value
-            end
-        end
-    end
+	for _, module in script:GetChildren() do
+		if isModule(module) and not isSpecialFile(module) then
+			cacheUtilitiesMethods[module.Name] = module
+			local expand = require(module)
+			cacheUtilitiesLib[module.Name] = expand
+			for key, value in expand do
+				if cacheUtilitiesMethods[key] then
+					--utilWarn("Method shadowing;", key, module.Name)
+					continue
+				end
+				if not isFunction(value) then
+					continue
+				end
+				cacheUtilitiesMethods[key] = value
+			end
+		end
+	end
 end
 
 run()
@@ -118,11 +120,11 @@ end):printFirst()
 
     ```
 ]]
-local exclude = function(inputTable : {any}, exclusionN : number)
-    for i = 1, exclusionN do
-        table.remove(inputTable, 1)
-    end
-    return inputTable;
+local exclude = function(inputTable: { any }, exclusionN: number)
+	for i = 1, exclusionN do
+		table.remove(inputTable, 1)
+	end
+	return inputTable
 end
 
 --[[
@@ -135,16 +137,15 @@ end
 
     ```
 ]]
-local excluding = function(inputTable : {any}, exclusionN : number)
-    inputTable = table.clone(inputTable)
-    for i = 1, exclusionN do
-        table.remove(inputTable, 1)
-    end
-    return inputTable;
+local excluding = function(inputTable: { any }, exclusionN: number)
+	inputTable = table.clone(inputTable)
+	for i = 1, exclusionN do
+		table.remove(inputTable, 1)
+	end
+	return inputTable
 end
 
 local um = {}
-
 
 --[[
     @params method : (...any) -> (...any), ...: any
@@ -171,30 +172,30 @@ local um = {}
     um:destroy()
     ```
 ]]
-function um.new(method : (...any) -> (...any), ...: {__firstResults: {any}} | any) --: um
-    local __params = {...}
-    local __isInitial = if typeof((__params)[1]) == "table" and (__params)[1]._firstResults then false else true;
-    local self = setmetatable ({
-        _params = not __isInitial and excluding(__params, 1) or __params,
-        _returns = {}, -- awaiting for completion of thread execution, responses from the following thread are not passed
-        _status = "none",
-        
-        _firstResults = not __isInitial and (__params)[1]._firstResults or nil,
-    }, {
-        __index = um, -- using um
-        __call = function(__self, __method : string) -- implicit parentheses execution
-            local useMethod = um[__method]
-            assert(useMethod, "methodName error " .. tostring(__method)) -- method does not exist under the library?
+function um.new(method: (...any) -> (...any), ...: { __firstResults: { any } } | any) --: um
+	local __params = { ... }
+	local __isInitial = if typeof((__params)[1]) == "table" and (__params)[1]._firstResults then false else true
+	local self = setmetatable({
+		_params = not __isInitial and excluding(__params, 1) or __params,
+		_returns = {}, -- awaiting for completion of thread execution, responses from the following thread are not passed
+		_status = "none",
 
-            return function (... : any)
-                return useMethod(__self, ...);
-            end
-        end
-    })
-    task.spawn(function()
-        self._thread = self:__run(method, unpack(self._params))
-    end)
-    return self;
+		_firstResults = not __isInitial and (__params)[1]._firstResults or nil,
+	}, {
+		__index = um, -- using um
+		__call = function(__self, __method: string) -- implicit parentheses execution
+			local useMethod = um[__method]
+			assert(useMethod, "methodName error " .. tostring(__method)) -- method does not exist under the library?
+
+			return function(...: any)
+				return useMethod(__self, ...)
+			end
+		end,
+	})
+	task.spawn(function()
+		self._thread = self:__run(method, unpack(self._params))
+	end)
+	return self
 end
 
 --[[
@@ -210,8 +211,8 @@ end
     print(key, value)
     ```
 --]]
-function um:returnNow() : ...any
-    return unpack(self._returns);
+function um:returnNow(): ...any
+	return unpack(self._returns)
 end
 
 --[[
@@ -227,14 +228,14 @@ end
     print(key, value)
     ```
 --]]
-function um:yield() : ...any
-    if self._status == "completed" then
-        return unpack(self._returns);
-    end
-    if not self._yield then
-        self._yield = coroutine.running()
-    end
-    return coroutine.yield()
+function um:yield(): ...any
+	if self._status == "completed" then
+		return unpack(self._returns)
+	end
+	if not self._yield then
+		self._yield = coroutine.running()
+	end
+	return coroutine.yield()
 end
 
 --[[
@@ -260,8 +261,8 @@ end
     print(key, value) -- "Key", "Value"
     ```
 --]]
-function um:yieldFirst(n : number?) : ...any | nil
-    return if t.number(n) then self._firstResults[n] else unpack(self._firstResults);
+function um:yieldFirst(n: number?): ...any | nil
+	return if t.number(n) then self._firstResults[n] else unpack(self._firstResults)
 end
 
 um.yieldInitial = um.yieldFirst
@@ -276,9 +277,9 @@ um.yieldInitial = um.yieldFirst
     u:wait():print()
     ```
 ]]
-function um:wait() : um
-    self:yield()
-    return self;
+function um:wait(): um
+	self:yield()
+	return self
 end
 
 --[[
@@ -302,11 +303,11 @@ end
     end)
     ```
 --]]
-function um:andThen(callback : (...any) -> ()) --: um
-    print(self)
-    return um.new(function()
-        return callback(self:yield());
-    end, self)
+function um:andThen(callback: (...any) -> ()) --: um
+	print(self)
+	return um.new(function()
+		return callback(self:yield())
+	end, self)
 end
 
 --[[
@@ -322,10 +323,10 @@ end
     end)
     ```
 ]]
-function um:delay(n : number) : um
-    assert(t.number(n), "delay: expected number")
-    task.wait(n)
-    return self;
+function um:delay(n: number): um
+	assert(t.number(n), "delay: expected number")
+	task.wait(n)
+	return self
 end
 
 --[[
@@ -343,8 +344,8 @@ end
     print(key, value)
     ```
 ]]
-function um:returnNowWithDelay(n : number) : ...any
-    return self:delay(n):returnNow();
+function um:returnNowWithDelay(n: number): ...any
+	return self:delay(n):returnNow()
 end
 
 --[[
@@ -357,15 +358,15 @@ end
     u:print()
     ```
 ]]
-function um:print() : um
-    local arrayOfResponse = {self:returnNow()}
-    print("--------------------UM-PRINT--------------------")
-    print("Manifesting responses < " .. tostring(self) .. " >");
-    for i, response in arrayOfResponse do
-        print(i .. " | " .. "(" .. typeof(response) .. ")<", response, ">")
-    end
-    print("------------------------------------------------")
-    return self;
+function um:print(): um
+	local arrayOfResponse = { self:returnNow() }
+	print("--------------------UM-PRINT--------------------")
+	print("Manifesting responses < " .. tostring(self) .. " >")
+	for i, response in arrayOfResponse do
+		print(i .. " | " .. "(" .. typeof(response) .. ")<", response, ">")
+	end
+	print("------------------------------------------------")
+	return self
 end
 
 --[[
@@ -380,19 +381,19 @@ end
     u:yieldPrint()
     ```
 ]]
-function um:yieldPrint() : um
-    return self:wait():print();
+function um:yieldPrint(): um
+	return self:wait():print()
 end
 
-function um:printFirst() : um
-    local arrayOfResponse = {self:yieldFirst()}
-    print("--------------------UM-PRINT--------------------")
-    print("Manifesting responses < " .. tostring(self) .. " >");
-    for i, response in arrayOfResponse do
-        print(i .. " | " .. "(" .. typeof(response) .. ")<", response, ">")
-    end
-    print("------------------------------------------------")
-    return self; 
+function um:printFirst(): um
+	local arrayOfResponse = { self:yieldFirst() }
+	print("--------------------UM-PRINT--------------------")
+	print("Manifesting responses < " .. tostring(self) .. " >")
+	for i, response in arrayOfResponse do
+		print(i .. " | " .. "(" .. typeof(response) .. ")<", response, ">")
+	end
+	print("------------------------------------------------")
+	return self
 end
 
 um.waitPrint = um.yieldPrint
@@ -412,8 +413,8 @@ um.promisePrint = um.yieldPrint
     ```
 ]]
 function um:cancel()
-    coroutine.close(self._thread)
-    self._status = "cancelled"
+	coroutine.close(self._thread)
+	self._status = "cancelled"
 end
 
 --[[
@@ -428,107 +429,107 @@ end
     print(u._status) -- "cancelled" -- this demonstrates that you can still access the values after cancelling, otherwise with destroy
     ```
 ]]
-function um:destroy() : nil
-    self:cancel()
-    for k in pairs(self) do
-        self[k] = nil
-    end
-    return nil;
+function um:destroy(): nil
+	self:cancel()
+	for k in pairs(self) do
+		self[k] = nil
+	end
+	return nil
 end
 
 um.Destroy = um.destroy
 um.remove = um.destroy
 um.Remove = um.destroy
 
-function um:__run(f : (...any) -> (...any), ...: any)
-    local contained = {...}
-    return task.spawn(function()
-        self._status = "running"
-        local results = {f(unpack(contained))}
-        self._returns = results
-        self._status = "completed"
-        if not self._firstResults then
-            self._firstResults = results
-        end
-        if self._yield then
-            task.spawn(self._yield, unpack(results))
-        end
-    end)
+function um:__run(f: (...any) -> (...any), ...: any)
+	local contained = { ... }
+	return task.spawn(function()
+		self._status = "running"
+		local results = { f(unpack(contained)) }
+		self._returns = results
+		self._status = "completed"
+		if not self._firstResults then
+			self._firstResults = results
+		end
+		if self._yield then
+			task.spawn(self._yield, unpack(results))
+		end
+	end)
 end
 
 local captureReturnType = function<ret...>(f: (...any) -> ret...): ret...
-    error("not callable");
+	error("not callable")
 end
-local lf = function<a, b>(_cb : (a) -> b) : a
-    error("not callable");
+local lf = function<a, b>(_cb: (a) -> b): a
+	error("not callable")
 end
 
 export type um = typeof(um.new(function() end))
-export type builtin_utils =
-    "instance" |
-    "tween" |
-    "string"
+export type builtin_utils = "instance" | "tween" | "string"
 type instanceTypes = typeof(require(script.instance))
 type tweenTypes = typeof(require(script.tween))
 type stringTypes = typeof(require(script.string))
+type numberTypes = typeof(require(script.number))
 
 type utilities =
-    (({any: any}, "instance") -> (instanceTypes)) &
-    (({any: any}, "tween") -> (tweenTypes)) &
-    (({any: any}, "string") -> (tweenTypes))
+	(({ any: any }, "instance") -> (instanceTypes))
+	& (({ any: any }, "tween") -> (tweenTypes))
+	& (({ any: any }, "string") -> (stringTypes))
+	& (({ any: any }, "number") -> (numberTypes))
 
 return setmetatable({
-        __utilitiesMethods = cacheUtilitiesMethods,
-        __utilitiesFolder = cacheUtilitiesModules,
-        __utilitiesLib = cacheUtilitiesLib,
-        __testModeEnabled = RunService:IsStudio() and true or false,
-    }, {
-    __index = {
-        instance = require(script.instance),
-        tween = require(script.tween),
-        string = require(script.string),
-        getRaw = function(mt)
-            return mt;
-        end,
-        getProperty = function(mt, key)
-            return mt[key];
-        end,
-        um = um,
-    },
-    __newindex = function(mt, key, value)
-        if key == "test" then
-            if value then
-                utilWarn("TestMode is enabled")
-                TestEZ.TestBootstrap:run({
-                    ReplicatedStorage.utilities
-                })
-            elseif not value then
-                utilWarn("TestMode is disabled")
-            end
-            rawset(mt, "__testModeEnabled", value)
-        else
-            rawset(mt, key, value)
-        end
-    end,
-    __tostring = function(mt)
-        return ("<utilities>(#%s)"):format(tostring(mt.__testModeEnabled))
-    end,
-    __call = function(mt, libraryName : builtin_utils | string) -- no longer supported
-        local uLib = mt:getProperty("__utilitiesLib")
-        local utility = uLib[libraryName]
+	__utilitiesMethods = cacheUtilitiesMethods,
+	__utilitiesFolder = cacheUtilitiesModules,
+	__utilitiesLib = cacheUtilitiesLib,
+	__testModeEnabled = RunService:IsStudio() and true or false,
+}, {
+	__index = {
+		instance = require(script.instance),
+		tween = require(script.tween),
+		string = require(script.string),
+		number = require(script.number),
+		getRaw = function(mt)
+			return mt
+		end,
+		getProperty = function(mt, key)
+			return mt[key]
+		end,
+		um = um,
+	},
+	__newindex = function(mt, key, value)
+		if key == "test" then
+			if value then
+				utilWarn("TestMode is enabled")
+				TestEZ.TestBootstrap:run({
+					ReplicatedStorage.utilities,
+				})
+			elseif not value then
+				utilWarn("TestMode is disabled")
+			end
+			rawset(mt, "__testModeEnabled", value)
+		else
+			rawset(mt, key, value)
+		end
+	end,
+	__tostring = function(mt)
+		return ("<utilities>(#%s)"):format(tostring(mt.__testModeEnabled))
+	end,
+	__call = function(mt, libraryName: builtin_utils | string) -- no longer supported
+		local uLib = mt:getProperty("__utilitiesLib")
+		local utility = uLib[libraryName]
 
-        if not utility then
-            return utilWarn(("Invalid utility name (%s)"):format(libraryName));
-        end
-        
-        return function (methodName : string)
-            local method = utility[methodName]
-            if not method then
-                return utilWarn(("Invalid method name (%s)"):format(methodName));
-            end
-            return function (... : any)
-                return um.new(method, ...); --method(...);
-            end
-        end
-    end
+		if not utility then
+			return utilWarn(("Invalid utility name (%s)"):format(libraryName))
+		end
+
+		return function(methodName: string)
+			local method = utility[methodName]
+			if not method then
+				return utilWarn(("Invalid method name (%s)"):format(methodName))
+			end
+			return function(...: any)
+				return um.new(method, ...) --method(...);
+			end
+		end
+	end,
 })

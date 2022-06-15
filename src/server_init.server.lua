@@ -17,8 +17,8 @@ Cmdr:RegisterDefaultCommands()
 Cmdr:RegisterHooksIn(ReplicatedStorage:WaitForChild("Hooks"))
 Cmdr:RegisterCommandsIn(ReplicatedStorage:WaitForChild("Commands"))
 
-Knit.Start():andThen(function()
-    print(("[%s-%s] Knit Initialized; developed by @arkizen."):format(game.PrivateServerId, game.JobId))
-
-end):catch(warn);
-
+Knit.Start()
+	:andThen(function()
+		print(("[%s-%s] Knit Initialized; developed by @arkizen."):format(game.PrivateServerId, game.JobId))
+	end)
+	:catch(warn)
