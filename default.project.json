@@ -10,11 +10,20 @@
       "utilities": {
         "$path": "src/utilities"
       },
-      "packages": {
+      "utilities.spec": {
+        "$path": "src/utilities.spec"
+      },
+      "Packages": {
         "$path": "Packages"
       },
-      "serverPackages": {
+      "ServerPackages": {
         "$path": "ServerPackages"
+      },
+      "Hooks": {
+        "$path": "Hooks"
+      },
+      "Commands": {
+        "$path": "Commands"
       }
     },
 

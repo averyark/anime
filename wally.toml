@@ -14,9 +14,11 @@ TableUtil = "finobinos/tableutil@3.2.1"
 ProfileService = "brittonfischer/profileservice@2.1.5"
 Remote = "sleitnick/remote@1.0.4"
 Signal = "sleitnick/signal@1.0.1"
-Promise = "evaera/promise@3.2.1"
+Promise = "evaera/promise@4.0.0"
 TopbarPlus = "developercron/icon@0.1.0"
 TestEZ = "roblox/testez@0.4.1"
+t = "osyrisrblx/t@3.0.0"
+BoatTween = "penguindevs/boattween@1.0.1"
 
 [server-dependencies]
 Cmdr = "evaera/cmdr@1.8.4"

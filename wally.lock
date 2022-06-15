@@ -10,7 +10,7 @@ dependencies = []
 [[package]]
 name = "devarke/animewall"
 version = "0.1.0"
-dependencies = [["Component", "sleitnick/component@2.4.5"], ["Janitor", "howmanysmall/janitor@1.14.1"], ["Knit", "sleitnick/knit@1.4.7"], ["Loader", "sleitnick/loader@1.0.2"], ["ProfileService", "brittonfischer/profileservice@2.1.5"], ["Promise", "evaera/promise@3.2.1"], ["Remote", "sleitnick/remote@1.0.4"], ["Signal", "sleitnick/signal@1.2.0"], ["TableUtil", "finobinos/tableutil@3.2.1"], ["TestEZ", "roblox/testez@0.4.1"], ["Timer", "sleitnick/timer@1.1.1"], ["TopbarPlus", "developercron/icon@0.1.0"]]
+dependencies = [["BoatTween", "penguindevs/boattween@1.0.1"], ["Component", "sleitnick/component@2.4.5"], ["Janitor", "howmanysmall/janitor@1.14.1"], ["Knit", "sleitnick/knit@1.4.7"], ["Loader", "sleitnick/loader@1.0.2"], ["ProfileService", "brittonfischer/profileservice@2.1.5"], ["Promise", "evaera/promise@4.0.0"], ["Remote", "sleitnick/remote@1.0.4"], ["Signal", "sleitnick/signal@1.2.0"], ["TableUtil", "finobinos/tableutil@3.2.1"], ["TestEZ", "roblox/testez@0.4.1"], ["Timer", "sleitnick/timer@1.1.1"], ["TopbarPlus", "developercron/icon@0.1.0"], ["t", "osyrisrblx/t@3.0.0"]]
 
 [[package]]
 name = "developercron/icon"
@@ -20,11 +20,6 @@ dependencies = []
 [[package]]
 name = "evaera/cmdr"
 version = "1.8.4"
-dependencies = []
-
-[[package]]
-name = "evaera/promise"
-version = "3.2.1"
 dependencies = []
 
 [[package]]
@@ -40,6 +35,16 @@ dependencies = []
 [[package]]
 name = "howmanysmall/janitor"
 version = "1.14.1"
+dependencies = []
+
+[[package]]
+name = "osyrisrblx/t"
+version = "3.0.0"
+dependencies = []
+
+[[package]]
+name = "penguindevs/boattween"
+version = "1.0.1"
 dependencies = []
 
 [[package]]
