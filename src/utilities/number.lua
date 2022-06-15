@@ -211,7 +211,7 @@ mathUtil.G = 6.673 * 10 ^ -11
 --[[
 	Equivalent to doing math.log(e, log). This is the fundamental of exponential growth.
 	```lua
-	print(mathLib.naturalLog(2)) -- Output: 0.69314718055996
+	print(mathUtil.naturalLog(2)) -- Output: 0.69314718055996
 	```
 ]]
 mathUtil.naturalLog = function(exp: number): number
@@ -223,7 +223,7 @@ end
 	In a sense this maps an integer to a number from 0 to 1 between a range. So say we had our min as 0 and our max as 10 and our value was 5 we would return 0.5.
 
 	```lua
-	print(mathLib.bound(0, 10, 5)) -- Output: 0.5
+	print(mathUtil.bound(0, 10, 5)) -- Output: 0.5
 	```
 ]]
 mathUtil.bound = function(min: number, max: number, value: number): number
@@ -234,7 +234,7 @@ end
 	Finds the derivative of the passed function (fx) at point x. The closer dx is to 0 the more close it is to the true answer.
 
 	```lua
-	print(mathLib.derivative(2, 0.000001, function(x)
+	print(mathUtil.derivative(2, 0.000001, function(x)
 		return x^2;
 	end)) --Output: 4.000001000648
 	```
@@ -249,7 +249,7 @@ end
 	```lua
 	for i = 0, 1, 0.01 do
 		local part = Instance.new("Part")
-		part.Position = Vector3.new(select(1, mathLib.ellipse(5, 5, i)), 5, select(2, mathLib.ellipse(5, 5, i)))
+		part.Position = Vector3.new(select(1, mathUtil.ellipse(5, 5, i)), 5, select(2, mathUtil.ellipse(5, 5, i)))
 		part.Anchored = true
 		part.Size = Vector3.new(1, 1, 1)
 		part.Parent = workspace
@@ -265,7 +265,7 @@ end
 	Maps a value to a value from 0 to 1. Similar to bound(min, max, value), the Sigmoid function maps to ± ∞. Note though, that just like the hyperbolic tangent of x this function becomes obsolete for numbers not near 0.
 
 	```lua
-	print(mathLib.sigmoid(6.9)) -- Output: 0.00100677082009
+	print(mathUtil.sigmoid(6.9)) -- Output: 0.00100677082009
 	```
 ]]
 mathUtil.sigmoid = function(z: number): number
@@ -278,7 +278,7 @@ end
 	```lua
 	for i=0, 6, 0.01 do
 		local part = Instance.new("Part")
-		part.Position = Vector3.new(i, mathLib.quadratic(-0.5, 3, 0, i), 0)
+		part.Position = Vector3.new(i, mathUtil.quadratic(-0.5, 3, 0, i), 0)
 		part.Anchored = true
 		part.Size = Vector3.new(0.1, 0.1, 0.1)
 		part.Parent = workspace
@@ -295,7 +295,7 @@ end
 	https://www.mathsisfun.com/calculus/integration-definite.html
 		
 	```lua
-	print(mathLib.integral(0, 1, 0.0001, function(x)
+	print(mathUtil.integral(0, 1, 0.0001, function(x)
 		return x^3;
 	end)) -- Output: 0.25005000249993
 	```
@@ -312,7 +312,7 @@ end
 	Given starting point a and end point b it gets the sum of all values from a function. Returning x on the function will be the equivalent of just doing 1+2+3 if a is 1 and b is 3.
 	
 	```lua
-	print(mathLib.sum(1, 10, function(x)
+	print(mathUtil.sum(1, 10, function(x)
 		return x+x;
 	end)) -- Output: 110
 	```
@@ -329,7 +329,7 @@ end
 	Exact same as sum(a, b, func) except instead of returning the sum of them it is the product. Returning x will be the equivalent of doing b! if a is 1. However this won’t work if it is a non-integer. You would need to use a gamma function. Do note that just cause of how exponential prod is if you get 0 or -NaN it’s probably because the range is too large.
 
 	```lua
-	print(mathLib.prod(1, 3, function(x)
+	print(mathUtil.prod(1, 3, function(x)
 		return x^2;
 	end)) -- Output: 36
 	```
@@ -346,7 +346,7 @@ end
 	Linear interpolates a real number where z is the alpha. NOT a class. A refers to the minimum value and b refers to the maximum.
 
 	```lua
-	print(mathLib.lerp(1, 3, 0.5)) -- Output: 2
+	print(mathUtil.lerp(1, 3, 0.5)) -- Output: 2
 	```
 ]]
 mathUtil.lerp = function(a: number, b: number, _t: number)
@@ -389,7 +389,7 @@ end
 	Same thing as quadBezier(timeStep, control1, control2, control3) but there is another control point.
 
 	```lua
-	print(mathLib.cubicBezier(0.69, Vector3.new(0, 1, 0), Vector3.new(1, 0, 0), Vector3.new(0, 0, 1), Vector3.new(0, 1, 1))) -- Output: (0.731073022, 0.3583, 0.328509003)(Vector3)
+	print(mathUtil.cubicBezier(0.69, Vector3.new(0, 1, 0), Vector3.new(1, 0, 0), Vector3.new(0, 0, 1), Vector3.new(0, 1, 1))) -- Output: (0.731073022, 0.3583, 0.328509003)(Vector3)
 	```
 ]]
 mathUtil.cubicBezier = function<a1>(
@@ -424,7 +424,7 @@ end
 	Equivalent to (a.Position - b.Position).Magnitude. This is useful for getting the distance between two objects.
 	
 	```lua
-	print(mathLib.eucDist(workspace.A.Position, workspace.B.Position)) -- Output: 22.137750904447
+	print(mathUtil.eucDist(workspace.A.Position, workspace.B.Position)) -- Output: 22.137750904447
 	```
 ]]
 mathUtil.eucDist = function<a1>(a: (Vector2 | Vector3) & a1, b: a1 & (Vector2 | Vector3)): number
@@ -441,7 +441,7 @@ end
 	Useful in Artificial Intelligence development. This returns the distance between two points in manhattan distance.
 
 	```lua
-	print(mathLib.manHatDist(workspace.A.Position, workspace.B.Position)) -- Output: 26.760003268719
+	print(mathUtil.manHatDist(workspace.A.Position, workspace.B.Position)) -- Output: 26.760003268719
 	```
 ]]
 mathUtil.manHatDist = function<a1>(a: (Vector2 | Vector3) & a1, b: a1 & (Vector2 | Vector3)): number
@@ -457,7 +457,7 @@ end
 	Chebyshev distance essentially solves the chess problem. Of course it will be useful for that but it is also used in some sudoku algorithms. Note, even though it is used in the example it is encouraged you use this for 2d cartesian coordinates in euclidean space only.
 
 	```lua
-	print(mathLib.chebDist(workspace.A.Position, workspace.B.Position)) -- Output: 21.504999160767
+	print(mathUtil.chebDist(workspace.A.Position, workspace.B.Position)) -- Output: 21.504999160767
 	```
 ]]
 mathUtil.chebDist = function<a1>(a: (Vector2 | Vector3) & a1, b: a1 & (Vector2 | Vector3)): number
@@ -475,7 +475,7 @@ end
 	```lua
 	game:GetService("RunService").Heartbeat:Connect(function()
 		local dir = workspace.Head.Position - workspace.Tail.Position
-		local newDir = mathLib.reflect(Vector3.new(0,1,0), dir)
+		local newDir = mathUtil.reflect(Vector3.new(0,1,0), dir)
 		local p = workspace.Head.Position + newDir
 		workspace.Aligner.CFrame = CFrame.new((p + workspace.Head.Position) / 2, p)
 		workspace.Aligner.Size = Vector3.new(0.5, 0.5, (p-workspace.Head.Position).Magnitude)
