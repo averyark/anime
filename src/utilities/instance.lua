@@ -1,7 +1,10 @@
 --!strict
--- instance
--- Arkizen
--- 09/06/2022
+--[[
+    FileName    > instance
+    Author      > AveryArk
+    Contact     > Twitter: https://twitter.com/averyark_
+    Created     > 09/06/2022
+--]]
 
 local instanceUtil = {}
 

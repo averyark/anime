@@ -1,7 +1,11 @@
 --!strict
--- utilities.init
--- Arkizen
--- 19/05/2022
+--[[
+    FileName    > utilities.init
+    Author      > AveryArk
+    Contact     > Twitter: https://twitter.com/averyark_
+    Created     > 19/05/2022
+--]]
+
 
 -- Ignore the Um object, and don't use it for production pls ~ark
 
@@ -409,7 +413,7 @@ um.promisePrint = um.yieldPrint
     ```lua
     local u = um.new(method)
     u:cancel()
-    print(u._status) -- "cancelled" -- this demonstrates that you can still access the values after cancelling, otherwise with destroy
+    print(u._status) -- "cancelled"
     ```
 ]]
 function um:cancel()
@@ -422,11 +426,11 @@ end
     @chainable false
     @aliases Destroy remove Remove
 
-    Cancels running thread and removing references internally.
+    Cancels running thread and remove references internally.
     ```lua
     local u = um.new(method)
     u:destroy()
-    print(u._status) -- "cancelled" -- this demonstrates that you can still access the values after cancelling, otherwise with destroy
+    print(u._status) -- "cancelled"
     ```
 ]]
 function um:destroy(): nil
@@ -464,20 +468,25 @@ local lf = function<a, b>(_cb: (a) -> b): a
 	error("not callable")
 end
 
-export type um = typeof(um.new(function() end))
-export type builtin_utils = "instance" | "tween" | "string"
+export type um = typeof(um.new(function() end)) -- deprecated
+export type builtin_utils = "instance" | "tween" | "string" -- deprecated
+
 type instanceTypes = typeof(require(script.instance))
 type tweenTypes = typeof(require(script.tween))
 type stringTypes = typeof(require(script.string))
 type numberTypes = typeof(require(script.number))
+type uiTypes = typeof(require(script.ui))
 
-type utilities =
+type typesList = {instance: instanceTypes, tween: tweenTypes, string: stringTypes, number: numberTypes, ui: uiTypes}
+
+-- unused type
+--[[type utilities =
 	(({ any: any }, "instance") -> (instanceTypes))
 	& (({ any: any }, "tween") -> (tweenTypes))
 	& (({ any: any }, "string") -> (stringTypes))
-	& (({ any: any }, "number") -> (numberTypes))
+	& (({ any: any }, "number") -> (numberTypes))]]
 
-return setmetatable({
+local __self = setmetatable({
 	__utilitiesMethods = cacheUtilitiesMethods,
 	__utilitiesFolder = cacheUtilitiesModules,
 	__utilitiesLib = cacheUtilitiesLib,
@@ -488,13 +497,14 @@ return setmetatable({
 		tween = require(script.tween),
 		string = require(script.string),
 		number = require(script.number),
-		getRaw = function(mt)
+        ui = require(script.ui),
+		_getRaw = function(mt)
 			return mt
 		end,
-		getProperty = function(mt, key)
+		_getProperty = function(mt, key)
 			return mt[key]
 		end,
-		um = um,
+		_um = um,
 	},
 	__newindex = function(mt, key, value)
 		if key == "test" then
@@ -533,3 +543,5 @@ return setmetatable({
 		end
 	end,
 })
+
+return __self :: typesList; --[[& {_getProperty: typeof(__self._getProperty), _getRaw: typeof(__self._getRaw)}]]

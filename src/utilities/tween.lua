@@ -1,6 +1,9 @@
--- tween
--- Arkizen
--- 09/06/2022
+--[[
+    FileName    > tween
+    Author      > AveryArk
+    Contact     > Twitter: https://twitter.com/averyark_
+    Created     > 09/06/2022
+--]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")

@@ -1,6 +1,9 @@
--- instance.spec
--- Arkizen
--- 09/06/2022
+--[[
+    FileName    > instance.spec
+    Author      > AveryArk
+    Contact     > Twitter: https://twitter.com/averyark_
+    Created     > 09/06/2022
+--]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 

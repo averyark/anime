@@ -1,7 +1,9 @@
--- number
--- Arkizen
--- 15/06/2022
-
+--[[
+    FileName    > number
+    Author      > AveryArk
+    Contact     > Twitter: https://twitter.com/averyark_
+    Created     > 15/06/2022
+--]]
 local mathUtil = {}
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
