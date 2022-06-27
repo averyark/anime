@@ -22,8 +22,8 @@ The objective of the game is to unlock and equip stronger ninjas by progressing 
 
 ### Contributors
 
-> @averyark Lead Programmer and maintainer for the github repository\
-> @AverageLuaU Backend and Frontend Programmer
+> [@AveryArk](https://github.com/averyark) Lead Programmer and maintainer for the github repository\
+> [@AverageLuaU](https://github.com/averageluau) Backend and Frontend Programmer
 
 ***
 ### Dependencies
@@ -72,4 +72,3 @@ The project utilizes various helper modules to increase code development efficie
 - Well maintained Desktop and Mobile support is expected. Most players plays on PC and Phones.
 - Putting the International community into our consideration is important, which is why text localization is crucial.
 - Interact with UIs using `utilities.ui.observeFor(uiName)`
-- 
