@@ -1,6 +1,17 @@
 # Anime Ninja Simulator
 
-Anime Ninja Simulator is a multiplayer Naruto IP based MMORPG game. The game will be set in various villages, hidden villages, and countries from the Naturo universe.\
+Anime Ninja Simulator is a multiplayer Naruto IP based MMORPG game. The game will be set in various villages, hidden villages, and countries from the Naturo universe. 
+
+There will be about 10 areas on release based on a setting for each area. There will be a boss at the end of each area. There will be missions the player should complete that helps them to progress to the next area. Areas can be unlocked by completing all the quests in the current area OR by saving up enough currency to unlock the next area. 
+
+Players will be able to use equipped ninja characters to engage in combat with an enemy NPC. Optionally, players can activate a button to directly damage a selected enemy NPC. Upon defeating an enemy, the player earns currency directly or by picking up dropped currency.
+
+Ninjas are characters the player can equip to fight enemy NPCs with. These are based on Nartuo characters.
+
+The objective of the game is to unlock and equip stronger ninjas by progressing to higher areas by earning currency.
+
+[Google Docs](https://docs.google.com/document/d/1gvsl3oDkl1MrIaWaRKGyx2nzcB9sx54sERcVYANOglE)
+
 #### References
 - https://narutofanon.fandom.com/wiki/World_of_Naruto
 - https://naruto.fandom.com/wiki/Geography
@@ -11,8 +22,8 @@ Anime Ninja Simulator is a multiplayer Naruto IP based MMORPG game. The game wil
 
 ### Contributors
 
-> **@averyark** Lead Programmer and maintainer for the github repository\
-> **@AverageLuaU** Backend and Frontend Programmer
+> @averyark Lead Programmer and maintainer for the github repository\
+> @AverageLuaU Backend and Frontend Programmer
 
 ***
 ### Dependencies
