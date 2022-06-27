@@ -27,11 +27,15 @@ The project utilizes various helper modules to increase code development efficie
 > [Documentation](https://github.com/osyrisrblx/t)
 
 > **BoatTween**\
-> BoatTween offers 32 easing styles (compared to Roblox’s 11) and they all have the 3 easing directions as well, allowing you to find exactly the tween timing you desire. It covers serveral TweenService insufficiency and brings more API to the table. `The util module has a fast tween method using BoatTween`
+> BoatTween offers 32 easing styles (compared to Roblox’s 11) and they all have the 3 easing directions as well, allowing you to find exactly the tween timing you desire. It covers serveral TweenService insufficiency and brings more API to the table. `The util module offers a fast tween method using BoatTween`
 > ```lua
 > utilities.tween.instance(instance, properties, duration, easingStyle,easingDirection)
-```
+>```
 > [Documentation](https://github.com/boatbomber/BoatTween)
+
+> **Cmdr**\
+> Cmdr is a fully extensible and type safe command console for Roblox developers. It offers great for admin commands, but does much more. Intelligent autocompletion and instant validation. Run commands programmatically on behalf of the local user. Embedded commands: dynamically use the output of an inner command when running a command.\
+> [Documentation](https://eryn.io/Cmdr/api/Cmdr.html)
 
 ### Code Guidelines
 
