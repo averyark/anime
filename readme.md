@@ -1,7 +1,20 @@
 # Anime Ninja Simulator
 
-Anime Ninja Simulator is a multiplayer Naruto IP based MMORPG game. Anime Ninja Simulator should have well maintained support for Desktop and Mobile.
+Anime Ninja Simulator is a multiplayer Naruto IP based MMORPG game. The game will be set in various villages, hidden villages, and countries from the Naturo universe.\
+#### References
+- https://narutofanon.fandom.com/wiki/World_of_Naruto
+- https://naruto.fandom.com/wiki/Geography
+- https://naruto.fandom.com/wiki/Category:Characters
 
+
+***
+
+### Contributors
+
+> **@averyark** Lead Programmer and maintainer for the github repository\
+> **@AverageLuaU** Backend and Frontend Programmer
+
+***
 ### Dependencies
 
 The project utilizes various helper modules to increase code development efficiency and also attempts to minimize potential bug caused by faulty code.
@@ -37,7 +50,15 @@ The project utilizes various helper modules to increase code development efficie
 > Cmdr is a fully extensible and type safe command console for Roblox developers. It offers great for admin commands, but does much more. Intelligent autocompletion and instant validation. Run commands programmatically on behalf of the local user. Embedded commands: dynamically use the output of an inner command when running a command.\
 > [Documentation](https://eryn.io/Cmdr/api/Cmdr.html)
 
-### Code Guidelines
+***
 
+### Utilities
 
-This project prioritize `OOP` over `POP`. 
+### Guidelines
+
+- `OOP` is suggested over `POP`; procedural programming is inferior as it lacks readability and reusability, especially in this project setup.
+- Making a comment with the purposes of your code is suggested but don't comment excessively.
+- Well maintained Desktop and Mobile support is expected. Most players plays on PC and Phones.
+- Putting the International community into our consideration is important, which is why text localization is crucial.
+- Interact with UIs using `utilities.ui.observeFor(uiName)`
+- 

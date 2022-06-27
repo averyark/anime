@@ -164,6 +164,11 @@ task.spawn(function()
 
 end)
 
+
+ui.observeFor = function(uiName : string, callback : () -> ())
+    ui.get(uiName):observe(callback)
+end
+
 return ui :: {
     new: typeof(ui.new),
     get: typeof(ui.get),
