@@ -73,10 +73,9 @@ The project utilizes various helper modules to increase code development efficie
 
 ### Practices
 
-### Guidelines
-
 - `OOP` is suggested over `POP`; procedural programming is inferior as it lacks readability and reusability, especially in this project setup.
 - Making a comment with the purposes of your code is suggested but don't comment excessively.
-- Well maintained Desktop and Mobile support is expected. Most players plays on PC and Phones.
-- Putting the International community into our consideration is important, which is why text localization is crucial.
+- Well maintained Desktop and Mobile support is expected. Most of our players will be PC and Phones players.
+- Putting the International community is one of our goal, which is why text localization is crucial.
 - Interact with UIs using `utilities.ui.observeFor(uiName)`
+- Always prefer methods from the utilities library unless it is inferior in your use case
