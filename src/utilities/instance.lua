@@ -40,9 +40,35 @@ function instanceUtil.firstDescendantThatIsA(ancestor: Instance, className: stri
 end
 
 --[[
+	Childrens are passed to the callback function, the first instance which returns true by the callback function is returned
+]]
+function instanceUtil.firstChildWithCondition(parent: Instance, callback: (Instance) -> (boolean?))
+	t.strict(isInstance(parent))
+	t.strict(t.callback(callback))
+	for _, child in parent:GetChildren() do
+		if callback(child) then
+			return child;
+		end
+	end
+end
+
+--[[
+	Descendants are passed to the callback function, the first instance which returns true by the callback function is returned
+]]
+function instanceUtil.firstDescendantWithCondition(ancestor: Instance, callback: (Instance) -> (boolean?))
+	t.strict(isInstance(ancestor))
+	t.strict(t.callback(callback))
+	for _, descendant in ancestor:GetDescendants() do
+		if callback(descendant) then
+			return descendant;
+		end
+	end
+end
+
+--[[
 	Returns all children that matches the given class type.
 ]]
-function instanceUtil.childrenThatIsA(parent: Instance, className: string): { Instance? }
+function instanceUtil.childrenThatIsA(parent: Instance, className: string): { Instance }
 	t.strict(isInstance(parent))
 	local instances = {}
 	for _, child in parent:GetChildren() do
@@ -56,7 +82,7 @@ end
 --[[
 	Returns all descendant that matches the given class type.
 ]]
-function instanceUtil.descendantThatIsA(ancestor: Instance, className: string): { Instance? }
+function instanceUtil.descendantThatIsA(ancestor: Instance, className: string): { Instance }
 	t.strict(isInstance(ancestor))
 	local instances = {}
 	for _, descendant in ancestor:GetDescendants() do
@@ -65,6 +91,34 @@ function instanceUtil.descendantThatIsA(ancestor: Instance, className: string): 
 		end
 	end
 	return instances
+end
+
+--[[
+	Childrens are passed to the callback function, the first instance which returns true by the callback function is returned
+]]
+function instanceUtil.childWithCondition(parent: Instance, callback: (Instance) -> (boolean?))
+	t.strict(isInstance(parent))
+	t.strict(t.callback(callback))
+	local instances = {}
+	for _, child in parent:GetChildren() do
+		if callback(child) then
+			table.insert(instances, child)
+		end
+	end
+end
+
+--[[
+	Descendants are passed to the callback function, the first instance which returns true by the callback function is returned
+]]
+function instanceUtil.descendantWithCondition(ancestor: Instance, callback: (Instance) -> (boolean?))
+	t.strict(isInstance(ancestor))
+	t.strict(t.callback(callback))
+	local instances = {}
+	for _, descendant in ancestor:GetDescendants() do
+		if callback(descendant) then
+			table.insert(instances, descendant)
+		end
+	end
 end
 
 --[[
@@ -96,7 +150,7 @@ end
 --[[
 	Returns all children that doesn't match the given class type.
 ]]
-function instanceUtil.childrenThatIsNotA(parent: Instance, className: string): { Instance? }
+function instanceUtil.childrenThatIsNotA(parent: Instance, className: string): { Instance }
 	t.strict(isInstance(parent))
 	local instances = {}
 	for _, child in parent:GetChildren() do
@@ -110,7 +164,7 @@ end
 --[[
 	Returns all descendant that doesn't match the given class type.
 ]]
-function instanceUtil.descendantThatIsNotA(ancestor: Instance, className: string): { Instance? }
+function instanceUtil.descendantThatIsNotA(ancestor: Instance, className: string): { Instance }
 	t.strict(isInstance(ancestor))
 	local instances = {}
 	for _, descendant in ancestor:GetDescendants() do
@@ -200,6 +254,90 @@ function instanceUtil.destroyDescendantThatIsNotA(ancestor: Instance, className:
 	for _, insc in instanceUtil.descendantThatIsNotA(ancestor, className) do
 		insc:Destroy()
 	end
+end
+
+--[[
+	Passes all children that matches the className to the callback. This function also listens for instances newly parented to the object.
+]]
+function instanceUtil.observeForChildrenThatIsA(parent : Instance, className : string, callback : (Instance) -> ()) : RBXScriptConnection
+	t.strict(isInstance(parent))
+	t.strict(t.string(className))
+	t.strict(t.callback(callback))
+	local checkAndCall = function(child)
+		if child:IsA(className) then
+			callback(child)
+		end
+	end
+	local connection = parent.ChildAdded:Connect(function(child)
+		checkAndCall(child)
+	end)
+	for _, child in parent:GetChildren() do
+		checkAndCall(child)
+	end
+	return connection;
+end
+
+--[[
+	Passes all descendant that matches the className to the callback. This function also listens for instances newly placed under the ancestor.
+]]
+function instanceUtil.observeForDescendantThatIsA(ancestor : Instance, className : string, callback : (Instance) -> ()) : RBXScriptConnection
+	t.strict(isInstance(ancestor))
+	t.strict(t.string(className))
+	t.strict(t.callback(callback))
+	local checkAndCall = function(descendant)
+		if descendant:IsA(className) then
+			callback(descendant)
+		end
+	end
+	local connection = ancestor.DescendantAdded:Connect(function(descendant)
+		checkAndCall(descendant)
+	end)
+	for _, descendant in ancestor:GetChildren() do
+		checkAndCall(descendant)
+	end
+	return connection;
+end
+
+--[[
+	Passes all children that the second callback agrees to the first callback. This function also listens for instances newly parented to the object.
+]]
+function instanceUtil.observeForChildrenWithCondition(parent : Instance, callback : (Instance) -> (), callback2 : (Instance) -> (boolean?)) : RBXScriptConnection
+	t.strict(isInstance(parent))
+	t.strict(t.callback(callback))
+	t.strict(t.callback(callback2))
+	local checkAndCall = function(child)
+		if callback2(child) then
+			callback(child)
+		end
+	end
+	local connection = parent.ChildAdded:Connect(function(child)
+		checkAndCall(child)
+	end)
+	for _, child in parent:GetChildren() do
+		checkAndCall(child)
+	end
+	return connection;
+end
+
+--[[
+	Passes all descendant that the second callback agrees to the first callback. This function also listens for instances newly placed under the ancestor.
+]]
+function instanceUtil.observeForDescendantWithCondition(ancestor : Instance, callback : (Instance) -> (), callback2 : (Instance) -> (boolean?)) : RBXScriptConnection
+	t.strict(isInstance(ancestor))
+	t.strict(t.callback(callback))
+	t.strict(t.callback(callback2))
+	local checkAndCall = function(descendant)
+		if callback(descendant) then
+			callback(descendant)
+		end
+	end
+	local connection = ancestor.DescendantAdded:Connect(function(descendant)
+		checkAndCall(descendant)
+	end)
+	for _, descendant in ancestor:GetChildren() do
+		checkAndCall(descendant)
+	end
+	return connection;
 end
 
 return instanceUtil

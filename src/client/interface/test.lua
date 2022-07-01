@@ -32,11 +32,18 @@ local utilities = require(ReplicatedStorage.utilities)
 
 local test = Knit.CreateController {
     Name = "test";
-    Client = {};
 }
-utilities.ui.get("test"):observe(function(ui)
 
+utilities.remote.testing:Connect(function(serverMsg)
+    print("server says:", serverMsg)
 end)
+
+utilities.remote.testing_set:Fire("hi server")
+
+print(utilities.remote.testing_get:Retrieve(3), 3)
+print(utilities.remote.testing_get:Retrieve(2), 2)
+print(utilities.remote.testing_get:Retrieve(5), 5)
+print(utilities.remote.testing_get:Retrieve(6), 6)
 
 function test:KnitStart()
 

@@ -196,14 +196,14 @@ mathUtil.toWord = function(n)
 	return (math.sign(n) == -1 and "Negative " or "") .. table.concat(results)
 end
 
--- Fork from https://devforum.roblox.com/t/introducing-mathaddons/1338754
+-- Forked from https://devforum.roblox.com/t/introducing-mathaddons/1338754
 function mathUtil.commaFormat(number: number)
 	local i, j, n, int, dec = tostring(number):find("([-]?)(%d+)([.]?%d*)")
 	int = string.gsub(string.reverse(int), "(%d%d%d)", "%1,")
 	return n .. string.gsub(string.reverse(int), "^,", "") .. dec
 end
 
--- Fork from https://devforum.roblox.com/t/make-your-workflow-easier-with-math/1025960
+-- Forked from https://devforum.roblox.com/t/make-your-workflow-easier-with-math/1025960
 -- Documented and typed by AveryArk (zenn#4004)
 
 mathUtil.phi = 1.6180339887

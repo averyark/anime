@@ -476,8 +476,9 @@ type tweenTypes = typeof(require(script.tween))
 type stringTypes = typeof(require(script.string))
 type numberTypes = typeof(require(script.number))
 type uiTypes = typeof(require(script.ui))
+type remoteTypes = typeof(require(script.remote))
 
-type typesList = {instance: instanceTypes, tween: tweenTypes, string: stringTypes, number: numberTypes, ui: uiTypes}
+type typesList = {instance: instanceTypes, tween: tweenTypes, string: stringTypes, number: numberTypes, ui: uiTypes, remote: remoteTypes}
 
 -- unused type
 --[[type utilities =
@@ -497,6 +498,7 @@ local __self = setmetatable({
 		tween = require(script.tween),
 		string = require(script.string),
 		number = require(script.number),
+        remote = require(script.remote),
         ui = require(script.ui),
 		_getRaw = function(mt)
 			return mt
