@@ -486,16 +486,4 @@ function BoatTween.Create(_, Object, Data)
 	return TweenObject
 end
 
---[[local nS = ""
-
-for a, b in pairs(TweenFunctions) do
-	if nS == "" then
-		nS = "\"" .. a .. "\""
-	else
-		nS = nS .. " | \n\"" .. a .. "\""
-	end
-end
-
-print(nS)]]
-
 return BoatTween
