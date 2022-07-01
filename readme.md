@@ -28,7 +28,7 @@ The objective of the game is to unlock and equip stronger ninjas by progressing 
 ***
 ### Dependencies
 
-The project utilizes various helper modules to increase code development efficiency and also attempts to minimize potential bug caused by faulty code.
+The project utilizes various helper modules to increase code development efficiency while attempting to minimize bug caused by faulty code.
 
 > **Knit**\
 > Knit orientates core game logic around services and controllers, allowing us to inherit cleaner organization across codebases and easier maintainability.\
@@ -61,9 +61,17 @@ The project utilizes various helper modules to increase code development efficie
 > Cmdr is a fully extensible and type safe command console for Roblox developers. It offers great for admin commands, but does much more. Intelligent autocompletion and instant validation. Run commands programmatically on behalf of the local user. Embedded commands: dynamically use the output of an inner command when running a command.\
 > [Documentation](https://eryn.io/Cmdr/api/Cmdr.html)
 
+> **TestEZ**\
+> TestEZ is a BDD-style testing framework for Roblox Lua. It provides an API that can run all of your tests with a single method call as well as a more granular API that exposes each step of the pipeline.\
+> [Documentation](https://roblox.github.io/testez/api-reference)
+
+> **Matter**\
+> Matter is a pure ECS library with fast archetypical entity storage, automatic system scheduling, and a slick API featuring topologically-aware state. Matter empowers users to build games that are extensible, performant, and easy to debug.\
+> [Documentation](https://eryn.io/matter/docs/GettingStarted)
+
 ***
 
-### Utilities
+### Practices
 
 ### Guidelines
 
