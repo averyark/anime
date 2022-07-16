@@ -1,8 +1,8 @@
 --[[
-    FileName	> test.lua
+    FileName	> tester.lua
     Author  	> AveryArk
     Contact 	> Twitter: https://twitter.com/averyark_
-    Created 	> 17/06/2022
+    Created 	> 02/07/2022
 --]]
 
 local UserInputService = game:GetService('UserInputService')
@@ -21,6 +21,7 @@ local MarketplaceService = game:GetService('MarketplaceService')
 local PolicyService = game:GetService('PolicyService')
 local TextService = game:GetService('TextService')
 local ReplicatedStorage = game:GetService('ReplicatedStorage')
+local LocalizationService = game:GetService('LocalizationService')
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
 local Janitor = require(ReplicatedStorage.Packages.Janitor)
@@ -29,24 +30,24 @@ local t = require(ReplicatedStorage.Packages.t)
 local Signal = require(ReplicatedStorage.Packages.Signal)
 local TableUtil = require(ReplicatedStorage.Packages.TableUtil)
 local utilities = require(ReplicatedStorage.utilities)
+local matter = require(ReplicatedStorage.Packages.matter)
 
-local test = Knit.CreateController {
-    Name = "test";
+local tester = Knit.CreateController {
+    Name = "tester";
 }
 
-utilities.remote.testing:Connect(function(serverMsg)
-    print("server says:", serverMsg)
-end)
-
-utilities.remote.testing_set:Fire("hi server")
-
-print(utilities.remote.testing_get:Retrieve(3), 3)
-print(utilities.remote.testing_get:Retrieve(2), 2)
-print(utilities.remote.testing_get:Retrieve(5), 5)
-print(utilities.remote.testing_get:Retrieve(6), 6)
-
-function test:KnitStart()
-
+function tester:KnitStart()
+    local rock = require(ReplicatedStorage.shared.Rock)
+    UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
+        if input.KeyCode == Enum.KeyCode.R then
+            print(gameProcessedEvent)
+            rock.Debris(Players.LocalPlayer.Character.HumanoidRootPart, 2, 5, 30)
+        end
+        if input.KeyCode == Enum.KeyCode.Q then
+            print(gameProcessedEvent)
+            rock.Crater(Players.LocalPlayer.Character.HumanoidRootPart, 8, 2, 30)
+        end
+    end)
 end
 
-return test;
+return tester;

@@ -268,12 +268,12 @@ function instanceUtil.observeForChildrenThatIsA(parent : Instance, className : s
 			callback(child)
 		end
 	end
-	local connection = parent.ChildAdded:Connect(function(child)
-		checkAndCall(child)
-	end)
 	for _, child in parent:GetChildren() do
 		checkAndCall(child)
 	end
+	local connection = parent.ChildAdded:Connect(function(child)
+		checkAndCall(child)
+	end)
 	return connection;
 end
 
@@ -289,12 +289,12 @@ function instanceUtil.observeForDescendantThatIsA(ancestor : Instance, className
 			callback(descendant)
 		end
 	end
-	local connection = ancestor.DescendantAdded:Connect(function(descendant)
-		checkAndCall(descendant)
-	end)
 	for _, descendant in ancestor:GetChildren() do
 		checkAndCall(descendant)
 	end
+	local connection = ancestor.DescendantAdded:Connect(function(descendant)
+		checkAndCall(descendant)
+	end)
 	return connection;
 end
 
