@@ -16,12 +16,10 @@ local TestEZ = require(ReplicatedStorage.Packages.TestEZ)
 
 Loader.LoadDescendants(script.Parent:FindFirstChild("client"))
 
+print('done')
+
 Cmdr:SetActivationKeys({ Enum.KeyCode.F2 })
-
-Knit.Start()
-	:andThen(function()
-		print(("[CLIENT_%s] Knit Initialized; developed by @arkizen."):format(Players.LocalPlayer.UserId))
-	end)
-	:catch(warn)
-
-print(utilities)
+Knit:Start():andThen(function()
+	print(("[CLIENT_%s] Knit Initialized; developed by @arkizen."):format(Players.LocalPlayer.UserId))
+end)
+:catch(warn)

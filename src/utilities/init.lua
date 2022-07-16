@@ -69,6 +69,17 @@ end
 
 run()
 
+local player = function(v)
+	local at = {}
+	repeat
+		task.wait()
+	until v.self;
+	for a, b in v.self do
+		at[a] = b
+	end
+	return at;
+end
+
 type typesList = {
 	instance: typeof(require(script.instance)),
 	tween: typeof(require(script.tween)),
@@ -76,6 +87,7 @@ type typesList = {
 	number: typeof(require(script.number)),
 	ui: typeof(require(script.ui)),
 	remote: typeof(require(script.remote)),
+	player: typeof(require(script.player))
 }
 
 local __self = setmetatable({
@@ -91,6 +103,7 @@ local __self = setmetatable({
 		number = require(script.number),
 		remote = require(script.remote),
 		ui = require(script.ui),
+		player = require(script.player), -- CLIENT UTIL YIELDS
 		_getRaw = function(mt)
 			return mt
 		end,
