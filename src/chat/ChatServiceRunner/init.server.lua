@@ -16,7 +16,9 @@ local ReplicatedModules = Chat:WaitForChild("ClientChatModules")
 local ChatSettings = require(ReplicatedModules:WaitForChild("ChatSettings"))
 
 local ChatLocalization = nil
-pcall(function() ChatLocalization = require(Chat.ClientChatModules.ChatLocalization :: any) end)
+pcall(function()
+	ChatLocalization = require(Chat.ClientChatModules.ChatLocalization :: any)
+end)
 ChatLocalization = ChatLocalization or {}
 
 local MAX_CHANNEL_NAME_LENGTH = ChatSettings.MaxChannelNameCheckLength or 50
@@ -24,7 +26,9 @@ local MAX_MESSAGE_LENGTH = ChatSettings.MaximumMessageLength
 local MAX_BYTES_PER_CODEPOINT = 6
 
 if not ChatLocalization.FormatMessageToSend or not ChatLocalization.LocalizeFormattedMessage then
-	function ChatLocalization:FormatMessageToSend(key,default) return default end
+	function ChatLocalization:FormatMessageToSend(key, default)
+		return default
+	end
 end
 
 local MAX_BLOCKED_SPEAKERS_PER_REQ = 50
@@ -32,7 +36,7 @@ local MAX_BLOCKED_SPEAKERS_PER_REQ = 50
 local useEvents = {}
 
 local EventFolder = EventFolderParent:FindFirstChild(EventFolderName)
-if (not EventFolder) then
+if not EventFolder then
 	EventFolder = Instance.new("Folder")
 	EventFolder.Name = EventFolderName
 	EventFolder.Archivable = false
@@ -40,35 +44,35 @@ if (not EventFolder) then
 end
 
 local function validateMessageLength(msg)
-    if msg:len() > MAX_MESSAGE_LENGTH*MAX_BYTES_PER_CODEPOINT then
-        return false
-    end
+	if msg:len() > MAX_MESSAGE_LENGTH * MAX_BYTES_PER_CODEPOINT then
+		return false
+	end
 
-    if utf8.len(msg) == nil then
-        return false
-    end
+	if utf8.len(msg) == nil then
+		return false
+	end
 
-    if utf8.len(utf8.nfcnormalize(msg)) > MAX_MESSAGE_LENGTH then
-        return false
-    end
+	if utf8.len(utf8.nfcnormalize(msg)) > MAX_MESSAGE_LENGTH then
+		return false
+	end
 
-    return true
+	return true
 end
 
 local function validateChannelNameLength(channelName)
-    if channelName:len() > MAX_CHANNEL_NAME_LENGTH*MAX_BYTES_PER_CODEPOINT then
-        return false
-    end
+	if channelName:len() > MAX_CHANNEL_NAME_LENGTH * MAX_BYTES_PER_CODEPOINT then
+		return false
+	end
 
-    if utf8.len(channelName) == nil then
-        return false
-    end
+	if utf8.len(channelName) == nil then
+		return false
+	end
 
-    if utf8.len(utf8.nfcnormalize(channelName)) > MAX_CHANNEL_NAME_LENGTH then
-        return false
-    end
+	if utf8.len(utf8.nfcnormalize(channelName)) > MAX_CHANNEL_NAME_LENGTH then
+		return false
+	end
 
-    return true
+	return true
 end
 
 --// No-opt connect Server>Client RemoteEvents to ensure they cannot be called
@@ -79,7 +83,7 @@ end
 
 local function GetObjectWithNameAndType(parentObject, objectName, objectType)
 	for _, child in pairs(parentObject:GetChildren()) do
-		if (child:IsA(objectType) and child.Name == objectName) then
+		if child:IsA(objectType) and child.Name == objectName then
 			return child
 		end
 	end
@@ -89,7 +93,7 @@ end
 
 local function CreateIfDoesntExist(parentObject, objectName, objectType)
 	local obj = GetObjectWithNameAndType(parentObject, objectName, objectType)
-	if (not obj) then
+	if not obj then
 		obj = Instance.new(objectType)
 		obj.Name = objectName
 		obj.Parent = parentObject
@@ -129,7 +133,7 @@ local function CreatePlayerSpeakerObject(playerObj)
 	--// name of a player and then a player joins and tries to
 	--// take that name, we first need to remove the old speaker object
 	local speaker = ChatService:GetSpeaker(playerObj.Name)
-	if (speaker) then
+	if speaker then
 		ChatService:RemoveSpeaker(playerObj.Name)
 	end
 
@@ -146,7 +150,7 @@ local function CreatePlayerSpeakerObject(playerObj)
 		local channelNameColor = nil
 
 		local channelObject = ChatService:GetChannel(channel)
-		if (channelObject) then
+		if channelObject then
 			log = channelObject:GetHistoryLogForSpeaker(speaker)
 			channelNameColor = channelObject.ChannelNameColor
 		end
@@ -178,7 +182,7 @@ EventFolder.SayMessageRequest.OnServerEvent:connect(function(playerObj, message,
 	end
 
 	local speaker = ChatService:GetSpeaker(playerObj.Name)
-	if (speaker) then
+	if speaker then
 		return speaker:SayMessage(message, channel)
 	end
 
@@ -248,7 +252,6 @@ EventFolder.SetBlockedUserIdsRequest.OnServerEvent:Connect(function(player, bloc
 	if speaker then
 		for i = 1, math.min(#blockedUserIdsList, MAX_BLOCKED_SPEAKERS_PER_REQ) do
 			if type(blockedUserIdsList[i]) == "number" then
-
 				table.insert(prunedBlockedUserIdsList, blockedUserIdsList[i])
 
 				local blockedPlayer = PlayersService:GetPlayerByUserId(blockedUserIdsList[i])
@@ -264,7 +267,7 @@ EventFolder.SetBlockedUserIdsRequest.OnServerEvent:Connect(function(player, bloc
 	end
 end)
 
-EventFolder.GetInitDataRequest.OnServerInvoke = (function(playerObj)
+EventFolder.GetInitDataRequest.OnServerInvoke = function(playerObj)
 	local speaker = ChatService:GetSpeaker(playerObj.Name)
 	if not (speaker and speaker:GetPlayer()) then
 		CreatePlayerSpeakerObject(playerObj)
@@ -277,9 +280,8 @@ EventFolder.GetInitDataRequest.OnServerInvoke = (function(playerObj)
 
 	for _, channelName in pairs(speaker:GetChannelList()) do
 		local channelObj = ChatService:GetChannel(channelName)
-		if (channelObj) then
-			local channelData =
-			{
+		if channelObj then
+			local channelData = {
 				channelName,
 				channelObj:GetWelcomeMessageForSpeaker(speaker),
 				channelObj:GetHistoryLogForSpeaker(speaker),
@@ -296,16 +298,16 @@ EventFolder.GetInitDataRequest.OnServerInvoke = (function(playerObj)
 	end
 
 	return data
-end)
+end
 
 local function DoJoinCommand(speakerName, channelName, fromChannelName)
 	local speaker = ChatService:GetSpeaker(speakerName)
 	local channel = ChatService:GetChannel(channelName)
 
-	if (speaker) then
-		if (channel) then
-			if (channel.Joinable) then
-				if (not speaker:IsInChannel(channel.Name)) then
+	if speaker then
+		if channel then
+			if channel.Joinable then
+				if not speaker:IsInChannel(channel.Name) then
 					speaker:JoinChannel(channel.Name)
 				else
 					speaker:SetMainChannel(channel.Name)
@@ -313,7 +315,8 @@ local function DoJoinCommand(speakerName, channelName, fromChannelName)
 						"GameChat_SwitchChannel_NowInChannel",
 						string.format("You are now chatting in channel: '%s'", channel.Name),
 						"RBX_NAME",
-						channel.Name)
+						channel.Name
+					)
 					speaker:SendSystemMessage(msg, channel.Name)
 				end
 			else
@@ -321,7 +324,8 @@ local function DoJoinCommand(speakerName, channelName, fromChannelName)
 					"GameChat_ChatServiceRunner_YouCannotJoinChannel",
 					"You cannot join channel '" .. channelName .. "'.",
 					"RBX_NAME",
-					channelName)
+					channelName
+				)
 				speaker:SendSystemMessage(msg, fromChannelName)
 			end
 		else
@@ -329,7 +333,8 @@ local function DoJoinCommand(speakerName, channelName, fromChannelName)
 				"GameChat_ChatServiceRunner_ChannelDoesNotExist",
 				"Channel '" .. channelName .. "' does not exist.",
 				"RBX_NAME",
-				channelName)
+				channelName
+			)
 			speaker:SendSystemMessage(msg, fromChannelName)
 		end
 	end
@@ -339,22 +344,24 @@ local function DoLeaveCommand(speakerName, channelName, fromChannelName)
 	local speaker = ChatService:GetSpeaker(speakerName)
 	local channel = ChatService:GetChannel(channelName)
 
-	if (speaker) then
-		if (speaker:IsInChannel(channelName)) then
-			if (channel.Leavable) then
+	if speaker then
+		if speaker:IsInChannel(channelName) then
+			if channel.Leavable then
 				speaker:LeaveChannel(channel.Name)
 				local msg = ChatLocalization:FormatMessageToSend(
 					"GameChat_ChatService_YouHaveLeftChannel",
 					string.format("You have left channel '%s'", channelName),
 					"RBX_NAME",
-					channel.Name)
+					channel.Name
+				)
 				speaker:SendSystemMessage(msg, "System")
 			else
 				local msg = ChatLocalization:FormatMessageToSend(
 					"GameChat_ChatServiceRunner_YouCannotLeaveChannel",
 					("You cannot leave channel '" .. channelName .. "'."),
 					"RBX_NAME",
-					channelName)
+					channelName
+				)
 				speaker:SendSystemMessage(msg, fromChannelName)
 			end
 		else
@@ -362,23 +369,24 @@ local function DoLeaveCommand(speakerName, channelName, fromChannelName)
 				"GameChat_ChatServiceRunner_YouAreNotInChannel",
 				("You are not in channel '" .. channelName .. "'."),
 				"RBX_NAME",
-				channelName)
+				channelName
+			)
 			speaker:SendSystemMessage(msg, fromChannelName)
 		end
 	end
 end
 
 ChatService:RegisterProcessCommandsFunction("default_commands", function(fromSpeaker, message, channel)
-	if (string.sub(message, 1, 6):lower() == "/join ") then
+	if string.sub(message, 1, 6):lower() == "/join " then
 		DoJoinCommand(fromSpeaker, string.sub(message, 7), channel)
 		return true
-	elseif (string.sub(message, 1, 3):lower() == "/j ") then
+	elseif string.sub(message, 1, 3):lower() == "/j " then
 		DoJoinCommand(fromSpeaker, string.sub(message, 4), channel)
 		return true
-	elseif (string.sub(message, 1, 7):lower() == "/leave ") then
+	elseif string.sub(message, 1, 7):lower() == "/leave " then
 		DoLeaveCommand(fromSpeaker, string.sub(message, 8), channel)
 		return true
-	elseif (string.sub(message, 1, 3):lower() == "/l ") then
+	elseif string.sub(message, 1, 3):lower() == "/l " then
 		DoLeaveCommand(fromSpeaker, string.sub(message, 4), channel)
 		return true
 	end
@@ -412,18 +420,18 @@ local systemChannel = ChatService:AddChannel("System")
 systemChannel.Leavable = false
 systemChannel.AutoJoin = true
 systemChannel.WelcomeMessage = ChatLocalization:FormatMessageToSend(
-	"GameChat_ChatServiceRunner_SystemChannelWelcomeMessage", "This channel is for system and game notifications."
+	"GameChat_ChatServiceRunner_SystemChannelWelcomeMessage",
+	"This channel is for system and game notifications."
 )
 
 systemChannel.SpeakerJoined:connect(function(speakerName)
 	systemChannel:MuteSpeaker(speakerName)
 end)
 
-
 local function TryRunModule(module)
 	if module:IsA("ModuleScript") then
 		local ret = require(module)
-		if (type(ret) == "function") then
+		if type(ret) == "function" then
 			ret(ChatService)
 		end
 	end
@@ -433,19 +441,19 @@ local modules = Chat:WaitForChild("ChatModules")
 modules.ChildAdded:connect(function(child)
 	local success, returnval = pcall(TryRunModule, child)
 	if not success and returnval then
-		print("Error running module " ..child.Name.. ": " ..returnval)
+		print("Error running module " .. child.Name .. ": " .. returnval)
 	end
 end)
 
 for _, module in pairs(modules:GetChildren()) do
 	local success, returnval = pcall(TryRunModule, module)
 	if not success and returnval then
-		print("Error running module " ..module.Name.. ": " ..returnval)
+		print("Error running module " .. module.Name .. ": " .. returnval)
 	end
 end
 
 PlayersService.PlayerRemoving:connect(function(playerObj)
-	if (ChatService:GetSpeaker(playerObj.Name)) then
+	if ChatService:GetSpeaker(playerObj.Name) then
 		ChatService:RemoveSpeaker(playerObj.Name)
 	end
 end)

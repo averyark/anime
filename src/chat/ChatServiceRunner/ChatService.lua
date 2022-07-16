@@ -3,7 +3,7 @@
 --	// Description: Manages creating and destroying ChatChannels and Speakers.
 
 local MAX_FILTER_RETRIES = 3
-local FILTER_BACKOFF_INTERVALS = {50/1000, 100/1000, 200/1000}
+local FILTER_BACKOFF_INTERVALS = { 50 / 1000, 100 / 1000, 200 / 1000 }
 local MAX_FILTER_DURATION = 60
 
 --- Constants used to decide when to notify that the chat filter is having issues filtering messages.
@@ -22,7 +22,7 @@ local ReplicatedModules = Chat:WaitForChild("ClientChatModules")
 local ChatSettings = require(ReplicatedModules:WaitForChild("ChatSettings"))
 
 local errorTextColor = ChatSettings.ErrorMessageTextColor or Color3.fromRGB(245, 50, 50)
-local errorExtraData = {ChatColor = errorTextColor}
+local errorExtraData = { ChatColor = errorTextColor }
 
 --////////////////////////////// Include
 --//////////////////////////////////////
@@ -33,11 +33,15 @@ local Speaker = require(modulesFolder:WaitForChild("Speaker"))
 local Util = require(modulesFolder:WaitForChild("Util"))
 
 local ChatLocalization = nil
-pcall(function() ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any) end)
+pcall(function()
+	ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any)
+end)
 ChatLocalization = ChatLocalization or {}
 
 if not ChatLocalization.FormatMessageToSend or not ChatLocalization.LocalizeFormattedMessage then
-	function ChatLocalization:FormatMessageToSend(key,default) return default end
+	function ChatLocalization:FormatMessageToSend(key, default)
+		return default
+	end
 end
 
 local function allSpaces(inputString)
@@ -51,25 +55,32 @@ local methods = {}
 methods.__index = methods
 
 function methods:AddChannel(channelName, autoJoin)
-	if (self.ChatChannels[channelName:lower()]) then
+	if self.ChatChannels[channelName:lower()] then
 		error(string.format("Channel %q alrady exists.", channelName))
 	end
 
 	local function DefaultChannelCommands(fromSpeaker, message)
-		if (message:lower() == "/leave") then
+		if message:lower() == "/leave" then
 			local channel = self:GetChannel(channelName)
 			local speaker = self:GetSpeaker(fromSpeaker)
-			if (channel and speaker) then
-				if (channel.Leavable) then
+			if channel and speaker then
+				if channel.Leavable then
 					speaker:LeaveChannel(channelName)
 					local msg = ChatLocalization:FormatMessageToSend(
 						"GameChat_ChatService_YouHaveLeftChannel",
 						string.format("You have left channel '%s'", channelName),
 						"RBX_NAME",
-						channelName)
+						channelName
+					)
 					speaker:SendSystemMessage(msg, "System")
 				else
-					speaker:SendSystemMessage(ChatLocalization:FormatMessageToSend("GameChat_ChatService_CannotLeaveChannel","You cannot leave this channel."), channelName)
+					speaker:SendSystemMessage(
+						ChatLocalization:FormatMessageToSend(
+							"GameChat_ChatService_CannotLeaveChannel",
+							"You cannot leave this channel."
+						),
+						channelName
+					)
 				end
 			end
 
@@ -78,15 +89,16 @@ function methods:AddChannel(channelName, autoJoin)
 		return false
 	end
 
-
 	local channel = ChatChannel.new(self, channelName)
 	self.ChatChannels[channelName:lower()] = channel
 
 	channel:RegisterProcessCommandsFunction("default_commands", DefaultChannelCommands, ChatConstants.HighPriority)
 
-	local success, err = pcall(function() self.eChannelAdded:Fire(channelName) end)
+	local success, err = pcall(function()
+		self.eChannelAdded:Fire(channelName)
+	end)
 	if not success and err then
-		print("Error addding channel: " ..err)
+		print("Error addding channel: " .. err)
 	end
 
 	if autoJoin ~= nil then
@@ -102,15 +114,17 @@ function methods:AddChannel(channelName, autoJoin)
 end
 
 function methods:RemoveChannel(channelName)
-	if (self.ChatChannels[channelName:lower()]) then
+	if self.ChatChannels[channelName:lower()] then
 		local n = self.ChatChannels[channelName:lower()].Name
 
 		self.ChatChannels[channelName:lower()]:InternalDestroy()
 		self.ChatChannels[channelName:lower()] = nil
 
-		local success, err = pcall(function() self.eChannelRemoved:Fire(n) end)
+		local success, err = pcall(function()
+			self.eChannelRemoved:Fire(n)
+		end)
 		if not success and err then
-			print("Error removing channel: " ..err)
+			print("Error removing channel: " .. err)
 		end
 	else
 		warn(string.format("Channel %q does not exist.", channelName))
@@ -121,18 +135,19 @@ function methods:GetChannel(channelName)
 	return self.ChatChannels[channelName:lower()]
 end
 
-
 function methods:AddSpeaker(speakerName)
-	if (self.Speakers[speakerName:lower()]) then
+	if self.Speakers[speakerName:lower()] then
 		error("Speaker \"" .. speakerName .. "\" already exists!")
 	end
 
 	local speaker = Speaker.new(self, speakerName)
 	self.Speakers[speakerName:lower()] = speaker
 
-	local success, err = pcall(function() self.eSpeakerAdded:Fire(speakerName) end)
+	local success, err = pcall(function()
+		self.eSpeakerAdded:Fire(speakerName)
+	end)
 	if not success and err then
-		print("Error adding speaker: " ..err)
+		print("Error adding speaker: " .. err)
 	end
 
 	return speaker
@@ -147,7 +162,7 @@ function methods:InternalUnmuteSpeaker(speakerName)
 end
 
 function methods:RemoveSpeaker(speakerName)
-	if (self.Speakers[speakerName:lower()]) then
+	if self.Speakers[speakerName:lower()] then
 		local n = self.Speakers[speakerName:lower()].Name
 
 		self:InternalUnmuteSpeaker(n)
@@ -155,11 +170,12 @@ function methods:RemoveSpeaker(speakerName)
 		self.Speakers[speakerName:lower()]:InternalDestroy()
 		self.Speakers[speakerName:lower()] = nil
 
-		local success, err = pcall(function() self.eSpeakerRemoved:Fire(n) end)
+		local success, err = pcall(function()
+			self.eSpeakerRemoved:Fire(n)
+		end)
 		if not success and err then
-			print("Error removing speaker: " ..err)
+			print("Error removing speaker: " .. err)
 		end
-
 	else
 		warn("Speaker \"" .. speakerName .. "\" does not exist!")
 	end
@@ -188,7 +204,7 @@ end
 function methods:GetChannelList()
 	local list = {}
 	for i, channel in pairs(self.ChatChannels) do
-		if (not channel.Private) then
+		if not channel.Private then
 			table.insert(list, channel.Name)
 		end
 	end
@@ -288,7 +304,7 @@ local StudioMessageFilteredCache = {}
 --DO NOT REMOVE THIS. Chat must be filtered or your game will face
 --moderation.
 function methods:InternalApplyRobloxFilter(speakerName, message, toSpeakerName) --// USES FFLAG
-	if (RunService:IsServer() and not RunService:IsStudio()) then
+	if RunService:IsServer() and not RunService:IsStudio() then
 		local fromSpeaker = self:GetSpeaker(speakerName)
 		local toSpeaker = toSpeakerName and self:GetSpeaker(toSpeakerName)
 
@@ -329,7 +345,7 @@ function methods:InternalApplyRobloxFilter(speakerName, message, toSpeakerName) 
 			end
 			local backoffInterval = FILTER_BACKOFF_INTERVALS[math.min(#FILTER_BACKOFF_INTERVALS, filterRetries)]
 			-- backoffWait = backoffInterval +/- (0 -> backoffInterval)
-			local backoffWait = backoffInterval + ((math.random()*2 - 1) * backoffInterval)
+			local backoffWait = backoffInterval + ((math.random() * 2 - 1) * backoffInterval)
 			wait(backoffWait)
 		end
 	else
@@ -349,8 +365,7 @@ end
 function methods:InternalApplyRobloxFilterNewAPI(speakerName, message, textFilterContext) --// USES FFLAG
 	local alwaysRunFilter = false
 	local runFilter = RunService:IsServer() and not RunService:IsStudio()
-	if (alwaysRunFilter or runFilter) then
-
+	if alwaysRunFilter or runFilter then
 		local fromSpeaker = self:GetSpeaker(speakerName)
 		if fromSpeaker == nil then
 			return false, nil, nil
@@ -370,7 +385,7 @@ function methods:InternalApplyRobloxFilterNewAPI(speakerName, message, textFilte
 			local result = ts:FilterStringAsync(message, fromPlayerObj.UserId, textFilterContext)
 			return result
 		end)
-		if (success) then
+		if success then
 			return true, true, filterResult
 		else
 			warn("Error filtering message:", message, filterResult)
@@ -427,7 +442,7 @@ function methods:InternalGetUniqueMessageId()
 end
 
 function methods:InternalAddSpeakerWithPlayerObject(speakerName, playerObj, fireSpeakerAdded)
-	if (self.Speakers[speakerName:lower()]) then
+	if self.Speakers[speakerName:lower()] then
 		error("Speaker \"" .. speakerName .. "\" already exists!")
 	end
 
@@ -436,9 +451,11 @@ function methods:InternalAddSpeakerWithPlayerObject(speakerName, playerObj, fire
 	self.Speakers[speakerName:lower()] = speaker
 
 	if fireSpeakerAdded then
-		local success, err = pcall(function() self.eSpeakerAdded:Fire(speakerName) end)
+		local success, err = pcall(function()
+			self.eSpeakerAdded:Fire(speakerName)
+		end)
 		if not success and err then
-			print("Error adding speaker: " ..err)
+			print("Error adding speaker: " .. err)
 		end
 	end
 
@@ -446,9 +463,11 @@ function methods:InternalAddSpeakerWithPlayerObject(speakerName, playerObj, fire
 end
 
 function methods:InternalFireSpeakerAdded(speakerName)
-	local success, err = pcall(function() self.eSpeakerAdded:Fire(speakerName) end)
+	local success, err = pcall(function()
+		self.eSpeakerAdded:Fire(speakerName)
+	end)
 	if not success and err then
-		print("Error firing speaker added: " ..err)
+		print("Error firing speaker added: " .. err)
 	end
 end
 

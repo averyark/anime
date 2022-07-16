@@ -2,7 +2,8 @@
 --	// Written by: Xsitsu, TheGamer101
 --	// Description: ChatChannel window for displaying messages.
 
-local UserFlagRemoveMessageOnTextFilterFailures do
+local UserFlagRemoveMessageOnTextFilterFailures
+do
 	local success, value = pcall(function()
 		return UserSettings():IsUserFeatureEnabled("UserRemoveMessageOnTextFilterFailures")
 	end)
@@ -28,7 +29,6 @@ local MessageLabelCreator = moduleMessageLabelCreator.new()
 --//////////////////////////////////////
 local methods = {}
 methods.__index = methods
-
 
 local function CreateGuiObjects()
 	local BaseFrame = Instance.new("Frame")
@@ -69,7 +69,7 @@ function methods:UpdateMessageFiltered(messageData)
 	local searchIndex = 1
 	local searchTable = self.MessageObjectLog
 
-	while (#searchTable >= searchIndex) do
+	while #searchTable >= searchIndex do
 		local obj = searchTable[searchIndex]
 
 		if obj.ID == messageData.ID then
@@ -143,8 +143,7 @@ function methods:IsScrolledDown()
 	local yContainerSize = self.Scroller.AbsoluteWindowSize.Y
 	local yScrolledPosition = self.Scroller.CanvasPosition.Y
 
-	return (yCanvasSize < yContainerSize or
-		yCanvasSize - yScrolledPosition <= yContainerSize + 5)
+	return (yCanvasSize < yContainerSize or yCanvasSize - yScrolledPosition <= yContainerSize + 5)
 end
 
 function methods:UpdateMessageTextHeight(messageObject)
@@ -185,7 +184,9 @@ function methods:PositionMessageLabelInWindow(messageObject, index)
 
 	if wasScrolledDown then
 		self.Scroller.CanvasPosition = Vector2.new(
-			0, math.max(0, self.Scroller.CanvasSize.Y.Offset - self.Scroller.AbsoluteSize.Y))
+			0,
+			math.max(0, self.Scroller.CanvasSize.Y.Offset - self.Scroller.AbsoluteSize.Y)
+		)
 	end
 end
 
@@ -194,7 +195,9 @@ function methods:ReorderAllMessages()
 
 	--// Reordering / reparenting with a size less than 1 causes weird glitches to happen
 	-- with scrolling as repositioning happens.
-	if self.GuiObject.AbsoluteSize.Y < 1 then return end
+	if self.GuiObject.AbsoluteSize.Y < 1 then
+		return
+	end
 
 	local oldCanvasPositon = self.Scroller.CanvasPosition
 	local wasScrolledDown = self:IsScrolledDown()
@@ -207,7 +210,9 @@ function methods:ReorderAllMessages()
 		self.Scroller.CanvasPosition = oldCanvasPositon
 	else
 		self.Scroller.CanvasPosition = Vector2.new(
-			0, math.max(0, self.Scroller.CanvasSize.Y.Offset - self.Scroller.AbsoluteSize.Y))
+			0,
+			math.max(0, self.Scroller.CanvasSize.Y.Offset - self.Scroller.AbsoluteSize.Y)
+		)
 	end
 end
 
@@ -256,7 +261,7 @@ end
 
 --// ToDo: Move to common modules
 function methods:WaitUntilParentedCorrectly()
-	while (not self.GuiObject:IsDescendantOf(game:GetService("Players").LocalPlayer)) do
+	while not self.GuiObject:IsDescendantOf(game:GetService("Players").LocalPlayer) do
 		self.GuiObject.AncestryChanged:wait()
 	end
 end
@@ -281,7 +286,9 @@ function module.new()
 	obj.CurrentChannelName = ""
 
 	obj.GuiObject:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-		spawn(function() obj:ReorderAllMessages() end)
+		spawn(function()
+			obj:ReorderAllMessages()
+		end)
 	end)
 
 	local wasScrolledDown = true

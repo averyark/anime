@@ -2,7 +2,8 @@
 --	// Written by: Xsitsu
 --	// Description: Hooks main chat module up to Topbar in corescripts.
 
-local FFlagUserHandleChatHotKeyWithContextActionService = false do
+local FFlagUserHandleChatHotKeyWithContextActionService = false
+do
 	local ok, value = pcall(function()
 		return UserSettings():IsUserFeatureEnabled("UserHandleChatHotKeyWithContextActionService")
 	end)
@@ -39,7 +40,9 @@ local function DoEverything()
 		event.Name = name
 		containerTable.ChatWindow[name] = event
 
-		event.Event:connect(function(...) Chat[name](Chat, ...) end)
+		event.Event:connect(function(...)
+			Chat[name](Chat, ...)
+		end)
 	end
 
 	local function ConnectFunction(name)
@@ -47,7 +50,9 @@ local function DoEverything()
 		func.Name = name
 		containerTable.ChatWindow[name] = func
 
-		func.OnInvoke = function(...) return Chat[name](Chat, ...) end
+		func.OnInvoke = function(...)
+			return Chat[name](Chat, ...)
+		end
 	end
 
 	local function ReverseConnectEvent(name)
@@ -55,7 +60,9 @@ local function DoEverything()
 		event.Name = name
 		containerTable.ChatWindow[name] = event
 
-		Chat[name]:connect(function(...) event:Fire(...) end)
+		Chat[name]:connect(function(...)
+			event:Fire(...)
+		end)
 	end
 
 	local function ConnectSignal(name)
@@ -63,7 +70,9 @@ local function DoEverything()
 		event.Name = name
 		containerTable.ChatWindow[name] = event
 
-		event.Event:connect(function(...) Chat[name]:fire(...) end)
+		event.Event:connect(function(...)
+			Chat[name]:fire(...)
+		end)
 	end
 
 	local function ConnectSetCore(name)
@@ -71,7 +80,9 @@ local function DoEverything()
 		event.Name = name
 		containerTable.SetCore[name] = event
 
-		event.Event:connect(function(...) Chat[name.."Event"]:fire(...) end)
+		event.Event:connect(function(...)
+			Chat[name .. "Event"]:fire(...)
+		end)
 	end
 
 	local function ConnectGetCore(name)
@@ -79,7 +90,9 @@ local function DoEverything()
 		func.Name = name
 		containerTable.GetCore[name] = func
 
-		func.OnInvoke = function(...) return Chat["f"..name](...) end
+		func.OnInvoke = function(...)
+			return Chat["f" .. name](...)
+		end
 	end
 
 	--// Do connections
@@ -107,9 +120,9 @@ local function DoEverything()
 	ConnectSetCore("ChatBarDisabled")
 	ConnectGetCore("ChatBarDisabled")
 
-    if not FFlagUserHandleChatHotKeyWithContextActionService then    
-        ConnectEvent("SpecialKeyPressed")
-    end
+	if not FFlagUserHandleChatHotKeyWithContextActionService then
+		ConnectEvent("SpecialKeyPressed")
+	end
 
 	SetCoreGuiChatConnections(containerTable)
 end
@@ -118,7 +131,9 @@ function SetCoreGuiChatConnections(containerTable)
 	local tries = 0
 	while tries < MAX_COREGUI_CONNECTION_ATTEMPTS do
 		tries = tries + 1
-		local success, ret = pcall(function() StarterGui:SetCore("CoreGuiChatConnections", containerTable) end)
+		local success, ret = pcall(function()
+			StarterGui:SetCore("CoreGuiChatConnections", containerTable)
+		end)
 		if success then
 			break
 		end
@@ -138,7 +153,7 @@ function checkBothChatTypesDisabled()
 	return false
 end
 
-if (not GuiService:IsTenFootInterface()) and (not game:GetService('UserInputService').VREnabled) then
+if (not GuiService:IsTenFootInterface()) and not game:GetService("UserInputService").VREnabled then
 	if not checkBothChatTypesDisabled() then
 		DoEverything()
 	else

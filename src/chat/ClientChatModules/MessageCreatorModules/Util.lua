@@ -63,7 +63,12 @@ end
 
 function methods:GetMessageHeight(BaseMessage, BaseFrame, xSize, isCoreMsg)
 	xSize = xSize or BaseFrame.AbsoluteSize.X
-	local textBoundsSize = self:GetStringTextBounds(BaseMessage.ContentText, BaseMessage.Font, BaseMessage.TextSize, Vector2.new(xSize, 1000))
+	local textBoundsSize = self:GetStringTextBounds(
+		BaseMessage.ContentText,
+		BaseMessage.Font,
+		BaseMessage.TextSize,
+		Vector2.new(xSize, 1000)
+	)
 	if textBoundsSize.Y ~= math.floor(textBoundsSize.Y) then
 		-- HACK Alert. TODO: Remove this when we switch UDim2 to use float Offsets
 		-- This is nessary due to rounding issues on mobile devices when translating between screen pixels and native pixels
@@ -87,7 +92,7 @@ function methods:CreateBaseMessage(message, font, textSize, chatColor)
 
 	local messageBorder = 8
 
-	local BaseMessage : TextLabel = self:GetFromObjectPool("TextLabel")
+	local BaseMessage: TextLabel = self:GetFromObjectPool("TextLabel")
 	BaseMessage.Selectable = false
 	BaseMessage.Size = UDim2.new(1, -(messageBorder + 6), 1, 0)
 	BaseMessage.Position = UDim2.new(0, messageBorder, 0, 0)
@@ -167,7 +172,7 @@ function methods:AddChannelButtonToBaseMessage(BaseMessage, channelColor, format
 	end)
 
 	local changedConn = nil
- 	changedConn = ChannelButton.Changed:connect(function(prop)
+	changedConn = ChannelButton.Changed:connect(function(prop)
 		if prop == "Parent" then
 			clickedConn:Disconnect()
 			changedConn:Disconnect()
@@ -214,7 +219,7 @@ function methods:NameButtonClicked(nameButton, playerName)
 	if ChatSettings.ClickOnPlayerNameToWhisper then
 		local player = Players:FindFirstChild(playerName)
 		if player and player ~= LocalPlayer then
-			local whisperChannel = GetWhisperChannelPrefix() ..playerName
+			local whisperChannel = GetWhisperChannelPrefix() .. playerName
 			if self.ChatWindow:GetChannel(whisperChannel) then
 				self.ChatBar:ResetCustomState()
 				local targetChannelName = self.ChatWindow:GetTargetMessageChannel()
@@ -222,12 +227,12 @@ function methods:NameButtonClicked(nameButton, playerName)
 					self.ChatWindow:SwitchCurrentChannel(whisperChannel)
 				end
 
-				local whisperMessage = "/w " ..playerName
+				local whisperMessage = "/w " .. playerName
 				self.ChatBar:SetText(whisperMessage)
 
 				self.ChatBar:CaptureFocus()
 			elseif not self.ChatBar:IsInCustomState() then
-				local whisperMessage = "/w " ..playerName
+				local whisperMessage = "/w " .. playerName
 				self.ChatBar:SetText(whisperMessage)
 
 				self.ChatBar:CaptureFocus()
@@ -328,12 +333,7 @@ function methods:CreateFadeFunctions(fadeObjects)
 	local function UpdateAnimFunction(dtScale, CurveUtil)
 		for object, properties in pairs(AnimParams) do
 			for property, values in pairs(properties) do
-				values.Current = CurveUtil:Expt(
-					values.Current,
-					values.Target,
-					values.NormalizedExptValue,
-					dtScale
-				)
+				values.Current = CurveUtil:Expt(values.Current, values.Target, values.NormalizedExptValue, dtScale)
 			end
 		end
 

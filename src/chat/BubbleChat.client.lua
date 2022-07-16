@@ -5,7 +5,7 @@
 ]]
 
 --[[ SERVICES ]]
-local PlayersService = game:GetService('Players')
+local PlayersService = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ChatService = game:GetService("Chat")
 local TextService = game:GetService("TextService")
@@ -24,21 +24,24 @@ local success, UserShouldLocalizeGameChatBubble = pcall(function()
 end)
 local UserShouldLocalizeGameChatBubble = success and UserShouldLocalizeGameChatBubble
 
-local UserFixBubbleChatText do
+local UserFixBubbleChatText
+do
 	local success, value = pcall(function()
 		return UserSettings():IsUserFeatureEnabled("UserFixBubbleChatText")
 	end)
 	UserFixBubbleChatText = success and value
 end
 
-local UserRoactBubbleChatBeta do
+local UserRoactBubbleChatBeta
+do
 	local success, value = pcall(function()
 		return UserSettings():IsUserFeatureEnabled("UserRoactBubbleChatBeta")
 	end)
 	UserRoactBubbleChatBeta = success and value
 end
 
-local UserPreventOldBubbleChatOverlap do
+local UserPreventOldBubbleChatOverlap
+do
 	local success, value = pcall(function()
 		return UserSettings():IsUserFeatureEnabled("UserPreventOldBubbleChatOverlap")
 	end)
@@ -60,23 +63,19 @@ local CHAT_BUBBLE_PADDING = 12
 local CHAT_BUBBLE_FADE_SPEED = 1.5
 
 local BILLBOARD_MAX_WIDTH = 400
-local BILLBOARD_MAX_HEIGHT = 250	--This limits the number of bubble chats that you see above characters
+local BILLBOARD_MAX_HEIGHT = 250 --This limits the number of bubble chats that you see above characters
 
 local ELIPSES = "..."
 local MaxChatMessageLength = 128 -- max chat message length, including null terminator and elipses.
 local MaxChatMessageLengthExclusive = MaxChatMessageLength - getMessageLength(ELIPSES) - 1
 
-local NEAR_BUBBLE_DISTANCE = 65	--previously 45
-local MAX_BUBBLE_DISTANCE = 100	--previously 80
+local NEAR_BUBBLE_DISTANCE = 65 --previously 45
+local MAX_BUBBLE_DISTANCE = 100 --previously 80
 
 --[[ END OF SCRIPT VARIABLES ]]
 
-
 -- [[ SCRIPT ENUMS ]]
-local BubbleColor = {	WHITE = "dub",
-					BLUE = "blu",
-					GREEN = "gre",
-					RED = "red" }
+local BubbleColor = { WHITE = "dub", BLUE = "blu", GREEN = "gre", RED = "red" }
 
 --[[ END OF SCRIPT ENUMS ]]
 
@@ -109,7 +108,9 @@ local function createFifo()
 
 	function this:PopFront()
 		table.remove(this.data, 1)
-		if this:Empty() then emptyEvent:Fire() end
+		if this:Empty() then
+			emptyEvent:Fire()
+		end
 	end
 
 	function this:Front()
@@ -150,17 +151,23 @@ local function createMap()
 	end
 
 	function this:Erase(key)
-		if this.data[key] then count = count - 1 end
+		if this.data[key] then
+			count = count - 1
+		end
 		this.data[key] = nil
 	end
 
 	function this:Set(key, value)
 		this.data[key] = value
-		if value then count = count + 1 end
+		if value then
+			count = count + 1
+		end
 	end
 
 	function this:Get(key)
-		if not key then return end
+		if not key then
+			return
+		end
 		if not this.data[key] then
 			this.data[key] = createCharacterChats()
 			local emptiedCon = nil
@@ -291,7 +298,6 @@ function createChatImposter(filePrefix, dotDotDot, yOffset)
 	return result
 end
 
-
 local this = {}
 this.ChatBubble = {}
 this.ChatBubbleWithTail = {}
@@ -301,14 +307,30 @@ this.CharacterSortedMsg = createMap()
 -- init chat bubble tables
 local function initChatBubbleType(chatBubbleType, fileName, imposterFileName, isInset, sliceRect)
 	this.ChatBubble[chatBubbleType] = createChatBubbleMain(fileName, sliceRect)
-	this.ChatBubbleWithTail[chatBubbleType] = createChatBubbleWithTail(fileName, UDim2.new(0.5, -CHAT_BUBBLE_TAIL_HEIGHT, 1, isInset and -1 or 0), UDim2.new(0, 30, 0, CHAT_BUBBLE_TAIL_HEIGHT), sliceRect)
-	this.ScalingChatBubbleWithTail[chatBubbleType] = createScaledChatBubbleWithTail(fileName, 0.5, UDim2.new(-0.5, 0, 0, isInset and -1 or 0), sliceRect)
+	this.ChatBubbleWithTail[chatBubbleType] = createChatBubbleWithTail(
+		fileName,
+		UDim2.new(0.5, -CHAT_BUBBLE_TAIL_HEIGHT, 1, isInset and -1 or 0),
+		UDim2.new(0, 30, 0, CHAT_BUBBLE_TAIL_HEIGHT),
+		sliceRect
+	)
+	this.ScalingChatBubbleWithTail[chatBubbleType] = createScaledChatBubbleWithTail(
+		fileName,
+		0.5,
+		UDim2.new(-0.5, 0, 0, isInset and -1 or 0),
+		sliceRect
+	)
 end
 
-initChatBubbleType(BubbleColor.WHITE,	"ui/dialog_white",	"ui/chatBubble_white_notify_bkg", 	false,	Rect.new(5,5,15,15))
-initChatBubbleType(BubbleColor.BLUE,	"ui/dialog_blue",	"ui/chatBubble_blue_notify_bkg",	true, 	Rect.new(7,7,33,33))
-initChatBubbleType(BubbleColor.RED,		"ui/dialog_red",	"ui/chatBubble_red_notify_bkg",		true,	Rect.new(7,7,33,33))
-initChatBubbleType(BubbleColor.GREEN,	"ui/dialog_green",	"ui/chatBubble_green_notify_bkg",	true,	Rect.new(7,7,33,33))
+initChatBubbleType(
+	BubbleColor.WHITE,
+	"ui/dialog_white",
+	"ui/chatBubble_white_notify_bkg",
+	false,
+	Rect.new(5, 5, 15, 15)
+)
+initChatBubbleType(BubbleColor.BLUE, "ui/dialog_blue", "ui/chatBubble_blue_notify_bkg", true, Rect.new(7, 7, 33, 33))
+initChatBubbleType(BubbleColor.RED, "ui/dialog_red", "ui/chatBubble_red_notify_bkg", true, Rect.new(7, 7, 33, 33))
+initChatBubbleType(BubbleColor.GREEN, "ui/dialog_green", "ui/chatBubble_green_notify_bkg", true, Rect.new(7, 7, 33, 33))
 
 function this:SanitizeChatLine(msg)
 	if getMessageLength(msg) > MaxChatMessageLengthExclusive then
@@ -369,7 +391,9 @@ function this:CreateBillboardGuiHelper(instance, onlyCharacter)
 end
 
 local function distanceToBubbleOrigin(origin)
-	if not origin then return 100000 end
+	if not origin then
+		return 100000
+	end
 
 	return (origin.Position - game.Workspace.CurrentCamera.CoordinateFrame.p).magnitude
 end
@@ -409,12 +433,17 @@ function this:SetBillboardLODVeryFar(billboardGui)
 end
 
 function this:SetBillboardGuiLOD(billboardGui, origin)
-	if not origin then return end
+	if not origin then
+		return
+	end
 
 	if origin:IsA("Model") then
 		local head = origin:FindFirstChild("Head")
-		if not head then origin = origin.PrimaryPart
-		else origin = head end
+		if not head then
+			origin = origin.PrimaryPart
+		else
+			origin = head
+		end
 	end
 
 	local bubbleDistance = distanceToBubbleOrigin(origin)
@@ -431,7 +460,9 @@ end
 function this:CameraCFrameChanged()
 	for index, value in pairs(this.CharacterSortedMsg:GetData()) do
 		local playerBillboardGui = value["BillboardGui"]
-		if playerBillboardGui then this:SetBillboardGuiLOD(playerBillboardGui, index) end
+		if playerBillboardGui then
+			this:SetBillboardGuiLOD(playerBillboardGui, index)
+		end
 	end
 end
 
@@ -486,36 +517,52 @@ function this:UpdateChatLinesForOrigin(origin, currentBubbleYPos)
 	local bubbleQueue = this.CharacterSortedMsg:Get(origin).Fifo
 	local bubbleQueueSize = bubbleQueue:Size()
 	local bubbleQueueData = bubbleQueue:GetData()
-	if #bubbleQueueData <= 1 then return end
+	if #bubbleQueueData <= 1 then
+		return
+	end
 
 	for index = (#bubbleQueueData - 1), 1, -1 do
 		local value = bubbleQueueData[index]
 		local bubble = value.RenderBubble
-		if not bubble then return end
+		if not bubble then
+			return
+		end
 		local bubblePos = bubbleQueueSize - index + 1
 
 		if bubblePos > 1 then
 			local tail = bubble:FindFirstChild("ChatBubbleTail")
-			if tail then tail:Destroy() end
+			if tail then
+				tail:Destroy()
+			end
 			local bubbleText = bubble:FindFirstChild("BubbleText")
-			if bubbleText then bubbleText.TextTransparency = 0.5 end
+			if bubbleText then
+				bubbleText.TextTransparency = 0.5
+			end
 		end
 
-		local udimValue = UDim2.new( bubble.Position.X.Scale, bubble.Position.X.Offset,
-									1, currentBubbleYPos - bubble.Size.Y.Offset - CHAT_BUBBLE_TAIL_HEIGHT)
+		local udimValue = UDim2.new(
+			bubble.Position.X.Scale,
+			bubble.Position.X.Offset,
+			1,
+			currentBubbleYPos - bubble.Size.Y.Offset - CHAT_BUBBLE_TAIL_HEIGHT
+		)
 		bubble:TweenPosition(udimValue, Enum.EasingDirection.Out, Enum.EasingStyle.Bounce, 0.1, true)
 		currentBubbleYPos = currentBubbleYPos - bubble.Size.Y.Offset - CHAT_BUBBLE_TAIL_HEIGHT
 	end
 end
 
 function this:DestroyBubble(bubbleQueue, bubbleToDestroy)
-	if not bubbleQueue then return end
-	if bubbleQueue:Empty() then return end
+	if not bubbleQueue then
+		return
+	end
+	if bubbleQueue:Empty() then
+		return
+	end
 
 	local bubble = bubbleQueue:Front().RenderBubble
 	if not bubble then
 		bubbleQueue:PopFront()
-	 	return
+		return
 	end
 
 	spawn(function()
@@ -534,8 +581,12 @@ function this:DestroyBubble(bubbleQueue, bubbleToDestroy)
 			if bubble then
 				local fadeAmount = timeBetween * CHAT_BUBBLE_FADE_SPEED
 				bubble.ImageTransparency = bubble.ImageTransparency + fadeAmount
-				if bubbleText then bubbleText.TextTransparency = bubbleText.TextTransparency + fadeAmount end
-				if bubbleTail then bubbleTail.ImageTransparency = bubbleTail.ImageTransparency + fadeAmount end
+				if bubbleText then
+					bubbleText.TextTransparency = bubbleText.TextTransparency + fadeAmount
+				end
+				if bubbleTail then
+					bubbleTail.ImageTransparency = bubbleTail.ImageTransparency + fadeAmount
+				end
 			end
 		end
 
@@ -547,7 +598,9 @@ function this:DestroyBubble(bubbleQueue, bubbleToDestroy)
 end
 
 function this:CreateChatLineRender(instance, line, onlyCharacter, fifo, shouldAutoLocalize)
-	if not instance then return end
+	if not instance then
+		return
+	end
 
 	if not this.CharacterSortedMsg:Get(instance)["BillboardGui"] then
 		this:CreateBillboardGuiHelper(instance, onlyCharacter)
@@ -565,8 +618,11 @@ function this:CreateChatLineRender(instance, line, onlyCharacter, fifo, shouldAu
 		line.RenderBubble = chatBubbleRender
 
 		local currentTextBounds = TextService:GetTextSize(
-				bubbleText.Text, CHAT_BUBBLE_FONT_SIZE_INT, CHAT_BUBBLE_FONT,
-				Vector2.new(BILLBOARD_MAX_WIDTH, BILLBOARD_MAX_HEIGHT))
+			bubbleText.Text,
+			CHAT_BUBBLE_FONT_SIZE_INT,
+			CHAT_BUBBLE_FONT,
+			Vector2.new(BILLBOARD_MAX_WIDTH, BILLBOARD_MAX_HEIGHT)
+		)
 		local numOflines = (currentTextBounds.Y / CHAT_BUBBLE_FONT_SIZE_INT)
 
 		if UserFixBubbleChatText then
@@ -594,7 +650,10 @@ function this:CreateChatLineRender(instance, line, onlyCharacter, fifo, shouldAu
 			this:SetBillboardGuiLOD(billboardGui, line.Origin)
 			this:UpdateChatLinesForOrigin(line.Origin, -height)
 		else
-			local bubbleWidthScale = math.max((currentTextBounds.X + CHAT_BUBBLE_WIDTH_PADDING) / BILLBOARD_MAX_WIDTH, 0.1)
+			local bubbleWidthScale = math.max(
+				(currentTextBounds.X + CHAT_BUBBLE_WIDTH_PADDING) / BILLBOARD_MAX_WIDTH,
+				0.1
+			)
 
 			-- prep chat bubble for tween
 			chatBubbleRender.Size = UDim2.new(0, 0, 0, 0)
@@ -602,10 +661,17 @@ function this:CreateChatLineRender(instance, line, onlyCharacter, fifo, shouldAu
 
 			local newChatBubbleOffsetSizeY = numOflines * CHAT_BUBBLE_LINE_HEIGHT
 
-			chatBubbleRender:TweenSizeAndPosition(UDim2.new(bubbleWidthScale, 0, 0, newChatBubbleOffsetSizeY),
-													UDim2.new( (1 - bubbleWidthScale) / 2, 0, 1, -newChatBubbleOffsetSizeY),
-													Enum.EasingDirection.Out, Enum.EasingStyle.Elastic, 0.1, true,
-													function() bubbleText.Visible = true end)
+			chatBubbleRender:TweenSizeAndPosition(
+				UDim2.new(bubbleWidthScale, 0, 0, newChatBubbleOffsetSizeY),
+				UDim2.new((1 - bubbleWidthScale) / 2, 0, 1, -newChatBubbleOffsetSizeY),
+				Enum.EasingDirection.Out,
+				Enum.EasingStyle.Elastic,
+				0.1,
+				true,
+				function()
+					bubbleText.Visible = true
+				end
+			)
 
 			-- todo: remove when over max bubbles
 			this:SetBillboardGuiLOD(billboardGui, line.Origin)
@@ -619,8 +685,9 @@ function this:CreateChatLineRender(instance, line, onlyCharacter, fifo, shouldAu
 end
 
 function this:OnPlayerChatMessage(sourcePlayer, message, targetPlayer)
-
-	if not this:BubbleChatEnabled() then return end
+	if not this:BubbleChatEnabled() then
+		return
+	end
 
 	local localPlayer = PlayersService.LocalPlayer
 	local fromOthers = localPlayer ~= nil and sourcePlayer ~= localPlayer
@@ -648,9 +715,13 @@ function this:OnGameChatMessage(origin, message, color)
 
 	local bubbleColor = BubbleColor.WHITE
 
-	if color == Enum.ChatColor.Blue then bubbleColor = BubbleColor.BLUE
-	elseif color == Enum.ChatColor.Green then bubbleColor = BubbleColor.GREEN
-	elseif color == Enum.ChatColor.Red then bubbleColor = BubbleColor.RED end
+	if color == Enum.ChatColor.Blue then
+		bubbleColor = BubbleColor.BLUE
+	elseif color == Enum.ChatColor.Green then
+		bubbleColor = BubbleColor.GREEN
+	elseif color == Enum.ChatColor.Red then
+		bubbleColor = BubbleColor.RED
+	end
 
 	local safeMessage = this:SanitizeChatLine(message)
 	local line = createGameChatLine(origin, safeMessage, not fromOthers, bubbleColor)
@@ -693,29 +764,36 @@ function this:ShowOwnFilteredMessage()
 end
 
 function findPlayer(playerName)
-	for i,v in pairs(PlayersService:GetPlayers()) do
+	for i, v in pairs(PlayersService:GetPlayers()) do
 		if v.Name == playerName then
 			return v
 		end
 	end
 end
 
-ChatService.Chatted:connect(function(origin, message, color) this:OnGameChatMessage(origin, message, color) end)
+ChatService.Chatted:connect(function(origin, message, color)
+	this:OnGameChatMessage(origin, message, color)
+end)
 
 local cameraChangedCon = nil
 if game.Workspace.CurrentCamera then
-	cameraChangedCon = game.Workspace.CurrentCamera:GetPropertyChangedSignal("CFrame"):connect(function(prop) this:CameraCFrameChanged() end)
+	cameraChangedCon = game.Workspace.CurrentCamera:GetPropertyChangedSignal("CFrame"):connect(function(prop)
+		this:CameraCFrameChanged()
+	end)
 end
 
 game.Workspace.Changed:connect(function(prop)
 	if prop == "CurrentCamera" then
-		if cameraChangedCon then cameraChangedCon:disconnect() end
+		if cameraChangedCon then
+			cameraChangedCon:disconnect()
+		end
 		if game.Workspace.CurrentCamera then
-			cameraChangedCon = game.Workspace.CurrentCamera:GetPropertyChangedSignal("CFrame"):connect(function(prop) this:CameraCFrameChanged() end)
+			cameraChangedCon = game.Workspace.CurrentCamera:GetPropertyChangedSignal("CFrame"):connect(function(prop)
+				this:CameraCFrameChanged()
+			end)
 		end
 	end
 end)
-
 
 local AllowedMessageTypes = nil
 
@@ -736,11 +814,11 @@ function getAllowedMessageTypes()
 		local chatConstants = clientChatModules:FindFirstChild("ChatConstants")
 		if chatConstants then
 			chatConstants = require(chatConstants)
-			AllowedMessageTypes = {chatConstants.MessageTypeDefault, chatConstants.MessageTypeWhisper}
+			AllowedMessageTypes = { chatConstants.MessageTypeDefault, chatConstants.MessageTypeWhisper }
 		end
 		return AllowedMessageTypes
 	end
-	return {"Message", "Whisper"}
+	return { "Message", "Whisper" }
 end
 
 function checkAllowedMessageType(messageData)

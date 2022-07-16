@@ -23,7 +23,9 @@ methods.__index = methods
 
 -- merge properties on both table to target
 function mergeProps(source, target)
-	if not source then return end
+	if not source then
+		return
+	end
 	for prop, value in pairs(source) do
 		target[prop] = value
 	end
@@ -45,7 +47,8 @@ function GetMessageCreators()
 		if creators[i]:IsA("ModuleScript") then
 			if creators[i].Name ~= "Util" then
 				local creator = require(creators[i])
-				typeToFunction[creator[messageCreatorUtil.KEY_MESSAGE_TYPE]] = creator[messageCreatorUtil.KEY_CREATOR_FUNCTION]
+				typeToFunction[creator[messageCreatorUtil.KEY_MESSAGE_TYPE]] =
+					creator[messageCreatorUtil.KEY_CREATOR_FUNCTION]
 			end
 		end
 	end
@@ -69,7 +72,9 @@ function methods:WrapIntoMessageObject(messageData, createdMessageObject)
 	obj.ID = messageData.ID
 	obj.BaseFrame = BaseFrame
 	obj.BaseMessage = BaseMessage
-	obj.UpdateTextFunction = UpdateTextFunction or function() warn("NO MESSAGE RESIZE FUNCTION") end
+	obj.UpdateTextFunction = UpdateTextFunction or function()
+		warn("NO MESSAGE RESIZE FUNCTION")
+	end
 	obj.GetHeightFunction = GetHeightFunction
 	obj.FadeInFunction = FadeInFunction
 	obj.FadeOutFunction = FadeOutFunction
@@ -86,11 +91,13 @@ function methods:WrapIntoMessageObject(messageData, createdMessageObject)
 end
 
 function methods:CreateMessageLabel(messageData, currentChannelName)
-
 	messageData.Channel = currentChannelName
 	local extraDeveloperFormatTable
 	pcall(function()
-		extraDeveloperFormatTable = Chat:InvokeChatCallback(Enum.ChatCallbackType.OnClientFormattingMessage, messageData)
+		extraDeveloperFormatTable = Chat:InvokeChatCallback(
+			Enum.ChatCallbackType.OnClientFormattingMessage,
+			messageData
+		)
 	end)
 	messageData.ExtraData = messageData.ExtraData or {}
 	mergeProps(extraDeveloperFormatTable, messageData.ExtraData)
@@ -107,7 +114,7 @@ function methods:CreateMessageLabel(messageData, currentChannelName)
 			return self:WrapIntoMessageObject(messageData, createdMessageObject)
 		end
 	else
-		error("No message creator available for message type: " ..messageType)
+		error("No message creator available for message type: " .. messageType)
 	end
 end
 

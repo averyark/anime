@@ -5,8 +5,16 @@
 local util = require(script.Parent:WaitForChild("Util"))
 
 local ChatLocalization = nil
-pcall(function() ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any) end)
-if ChatLocalization == nil then ChatLocalization = { Get = function(self, key, default) return default end } end
+pcall(function()
+	ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any)
+end)
+if ChatLocalization == nil then
+	ChatLocalization = {
+		Get = function(self, key, default)
+			return default
+		end,
+	}
+end
 
 function ProcessMessage(message, ChatWindow, ChatSettings)
 	if string.sub(message, 1, 3):lower() ~= "/c " then
@@ -22,12 +30,17 @@ function ProcessMessage(message, ChatWindow, ChatSettings)
 			local currentChannel = ChatWindow:GetCurrentChannel()
 			if currentChannel then
 				util:SendSystemMessageToSelf(
-					string.gsub(ChatLocalization:Get(
-						"GameChat_SwitchChannel_NowInChannel",
-						string.format("You are now chatting in channel: '%s'", channelName),
-						{RBX_NAME = channelName}
-					),"{RBX_NAME}",channelName),
-					targetChannel, {}
+					string.gsub(
+						ChatLocalization:Get(
+							"GameChat_SwitchChannel_NowInChannel",
+							string.format("You are now chatting in channel: '%s'", channelName),
+							{ RBX_NAME = channelName }
+						),
+						"{RBX_NAME}",
+						channelName
+					),
+					targetChannel,
+					{}
 				)
 			end
 		end
@@ -35,12 +48,17 @@ function ProcessMessage(message, ChatWindow, ChatSettings)
 		local currentChannel = ChatWindow:GetCurrentChannel()
 		if currentChannel then
 			util:SendSystemMessageToSelf(
-				string.gsub(ChatLocalization:Get(
-					"GameChat_SwitchChannel_NotInChannel",
-					string.format("You are not in channel: '%s'", channelName),
-					{RBX_NAME = channelName}
-				),"{RBX_NAME}",channelName), 
-				currentChannel, {ChatColor = Color3.fromRGB(245, 50, 50)}
+				string.gsub(
+					ChatLocalization:Get(
+						"GameChat_SwitchChannel_NotInChannel",
+						string.format("You are not in channel: '%s'", channelName),
+						{ RBX_NAME = channelName }
+					),
+					"{RBX_NAME}",
+					channelName
+				),
+				currentChannel,
+				{ ChatColor = Color3.fromRGB(245, 50, 50) }
 			)
 		end
 	end
@@ -50,5 +68,5 @@ end
 
 return {
 	[util.KEY_COMMAND_PROCESSOR_TYPE] = util.COMPLETED_MESSAGE_PROCESSOR,
-	[util.KEY_PROCESSOR_FUNCTION] = ProcessMessage
+	[util.KEY_PROCESSOR_FUNCTION] = ProcessMessage,
 }

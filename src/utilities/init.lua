@@ -6,7 +6,6 @@
     Created     > 19/05/2022
 --]]
 
-
 -- Ignore the Um object, and don't use it for production pls ~ark
 
 local RunService = game:GetService("RunService")
@@ -71,12 +70,12 @@ end
 run()
 
 type typesList = {
-    instance: typeof(require(script.instance)),
-    tween: typeof(require(script.tween)),
-    string: typeof(require(script.string)),
-    number: typeof(require(script.number)),
-    ui: typeof(require(script.ui)),
-    remote: typeof(require(script.remote))
+	instance: typeof(require(script.instance)),
+	tween: typeof(require(script.tween)),
+	string: typeof(require(script.string)),
+	number: typeof(require(script.number)),
+	ui: typeof(require(script.ui)),
+	remote: typeof(require(script.remote)),
 }
 
 local __self = setmetatable({
@@ -90,8 +89,8 @@ local __self = setmetatable({
 		tween = require(script.tween),
 		string = require(script.string),
 		number = require(script.number),
-        remote = require(script.remote),
-        ui = require(script.ui),
+		remote = require(script.remote),
+		ui = require(script.ui),
 		_getRaw = function(mt)
 			return mt
 		end,
@@ -119,4 +118,4 @@ local __self = setmetatable({
 	end,
 })
 
-return __self :: typesList; --[[& {_getProperty: typeof(__self._getProperty), _getRaw: typeof(__self._getRaw)}]]
+return __self :: typesList --[[& {_getProperty: typeof(__self._getProperty), _getRaw: typeof(__self._getRaw)}]]

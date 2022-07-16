@@ -2,7 +2,9 @@
 
 local LocalizationService = game:GetService("LocalizationService")
 local ChatService = game:GetService("Chat")
-local success, userShouldLocalizeServerMessages = pcall(function() return UserSettings():IsUserFeatureEnabled("UserShouldLocalizeServerMessages") end)
+local success, userShouldLocalizeServerMessages = pcall(function()
+	return UserSettings():IsUserFeatureEnabled("UserShouldLocalizeServerMessages")
+end)
 local userShouldLocalizeServerMessages = success and userShouldLocalizeServerMessages
 
 local existingKey = {
@@ -19,7 +21,7 @@ function ChatLocalization:_getTranslator()
 	if not self._translator and not self._hasFetchedLocalization then
 		-- Don't keep retrying if this fails.
 		self._hasFetchedLocalization = true
-		
+
 		local localizationTable = ChatService:WaitForChild("ChatLocalization", 4)
 		if localizationTable then
 			self._translator = localizationTable:GetTranslator(LocalizationService.RobloxLocaleId)
@@ -49,7 +51,6 @@ function ChatLocalization:Get(key, default, extraParameters)
 end
 
 function ChatLocalization:LocalizeFormattedMessage(message)
-
 	if not userShouldLocalizeServerMessages then
 		return message
 	end
@@ -72,7 +73,7 @@ function ChatLocalization:LocalizeFormattedMessage(message)
 	default = string.sub(message, defaultEnd + 1, paramStart - 1)
 	local params = string.sub(message, paramEnd + 1)
 	local extraParameters = {}
-	for k,v in string.gmatch(params,"([^%s]+)=([^%s]+)") do
+	for k, v in string.gmatch(params, "([^%s]+)=([^%s]+)") do
 		extraParameters[k] = v
 	end
 
@@ -82,16 +83,22 @@ end
 function ChatLocalization:FormatMessageToSend(key, defaultMessage, parameterName, value)
 	if userShouldLocalizeServerMessages then
 		if parameterName and value then
-			return "{RBX_LOCALIZATION_KEY}"..key.."{RBX_LOCALIZATION_DEFAULT}"..defaultMessage
-				.."{RBX_LOCALIZATION_PARAMS}"..parameterName.."="..value
+			return "{RBX_LOCALIZATION_KEY}"
+				.. key
+				.. "{RBX_LOCALIZATION_DEFAULT}"
+				.. defaultMessage
+				.. "{RBX_LOCALIZATION_PARAMS}"
+				.. parameterName
+				.. "="
+				.. value
 		else
-			return "{RBX_LOCALIZATION_KEY}"..key.."{RBX_LOCALIZATION_DEFAULT}"..defaultMessage
+			return "{RBX_LOCALIZATION_KEY}" .. key .. "{RBX_LOCALIZATION_DEFAULT}" .. defaultMessage
 		end
 	else
 		if parameterName and value then
-			return string.gsub(self:Get(key,defaultMessage), "{"..parameterName.."}", value)
+			return string.gsub(self:Get(key, defaultMessage), "{" .. parameterName .. "}", value)
 		else
-			return self:Get(key,defaultMessage)
+			return self:Get(key, defaultMessage)
 		end
 	end
 end

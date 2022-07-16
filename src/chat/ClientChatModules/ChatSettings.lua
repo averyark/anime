@@ -15,7 +15,7 @@ module.WindowResizable = true
 module.ShowChannelsBar = false
 module.GamepadNavigationEnabled = false
 module.AllowMeCommand = true -- Me Command will only be effective when this set to true
-module.ShowUserOwnFilteredMessage = true	--Show a user the filtered version of their message rather than the original.
+module.ShowUserOwnFilteredMessage = true --Show a user the filtered version of their message rather than the original.
 -- Make the chat work when the top bar is off
 module.ChatOnWithTopBarOff = false
 module.ScreenGuiDisplayOrder = 6 -- The DisplayOrder value for the ScreenGui containing the chat.
@@ -46,7 +46,7 @@ module.ChatBarBackGroundColor = Color3.new(0, 0, 0)
 module.ChatBarBoxColor = Color3.new(1, 1, 1)
 module.ChatBarTextColor = Color3.new(0, 0, 0)
 module.ChannelsTabUnselectedColor = Color3.new(0, 0, 0)
-module.ChannelsTabSelectedColor = Color3.new(30/255, 30/255, 30/255)
+module.ChannelsTabSelectedColor = Color3.new(30 / 255, 30 / 255, 30 / 255)
 module.DefaultChannelNameColor = Color3.fromRGB(35, 76, 142)
 module.WhisperChannelNameColor = Color3.fromRGB(102, 14, 102)
 module.ErrorMessageTextColor = Color3.fromRGB(245, 50, 50)
@@ -85,10 +85,10 @@ module.ShowJoinAndLeaveHelpText = false
 
 ---[[ Message Settings ]]
 module.MaximumMessageLength = 200
-module.DisallowedWhiteSpace = {"\n", "\r", "\t", "\v", "\f"}
+module.DisallowedWhiteSpace = { "\n", "\r", "\t", "\v", "\f" }
 module.ClickOnPlayerNameToWhisper = true
 module.ClickOnChannelNameToSetMainChannel = true
-module.BubbleChatMessageTypes = {ChatConstants.MessageTypeDefault, ChatConstants.MessageTypeWhisper}
+module.BubbleChatMessageTypes = { ChatConstants.MessageTypeDefault, ChatConstants.MessageTypeWhisper }
 
 ---[[ Misc Settings ]]
 module.WhisperCommandAutoCompletePlayerNames = true
@@ -101,8 +101,7 @@ module.WhisperByDisplayName = true
 
 local ChangedEvent = Instance.new("BindableEvent")
 
-local proxyTable = setmetatable({},
-{
+local proxyTable = setmetatable({}, {
 	__index = function(tbl, index)
 		return module[index]
 	end,

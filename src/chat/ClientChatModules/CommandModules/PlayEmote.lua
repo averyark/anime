@@ -9,12 +9,21 @@ local CommandModules = script.Parent
 local Util = require(CommandModules:WaitForChild("Util"))
 
 local ChatLocalization = nil
-pcall(function() ChatLocalization = require(Chat.ClientChatModules.ChatLocalization :: any) end)
-if ChatLocalization == nil then ChatLocalization = { Get = function(self, key, fallback) return fallback end } end
+pcall(function()
+	ChatLocalization = require(Chat.ClientChatModules.ChatLocalization :: any)
+end)
+if ChatLocalization == nil then
+	ChatLocalization = {
+		Get = function(self, key, fallback)
+			return fallback
+		end,
+	}
+end
 
 local LocalPlayer = Players.LocalPlayer
 
-local UserPlayEmoteChatTextUpdates do
+local UserPlayEmoteChatTextUpdates
+do
 	local success, value = pcall(function()
 		return UserSettings():IsUserFeatureEnabled("UserPlayEmoteChatTextUpdates")
 	end)
@@ -151,7 +160,9 @@ local function ProcessMessage(message, ChatWindow, ChatSettings)
 	end
 
 	spawn(function()
-		local ok, didPlay = pcall(function() return humanoid:PlayEmote(emoteName) end)
+		local ok, didPlay = pcall(function()
+			return humanoid:PlayEmote(emoteName)
+		end)
 
 		if not ok then
 			sendErrorMessage(channelObj, LocalizationKeys.NotSupported)
@@ -169,5 +180,5 @@ end
 
 return {
 	[Util.KEY_COMMAND_PROCESSOR_TYPE] = Util.COMPLETED_MESSAGE_PROCESSOR,
-	[Util.KEY_PROCESSOR_FUNCTION] = ProcessMessage
+	[Util.KEY_PROCESSOR_FUNCTION] = ProcessMessage,
 }

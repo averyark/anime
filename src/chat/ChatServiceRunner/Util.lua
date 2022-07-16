@@ -14,7 +14,8 @@ end
 local Util = {}
 Util.__index = Util
 
-local SortedFunctionContainer = {}; do
+local SortedFunctionContainer = {}
+do
 	-- This sorted function container is used to handle the logic around storing filter functions and
 	-- command processors by priority.
 

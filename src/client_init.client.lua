@@ -19,9 +19,9 @@ Loader.LoadDescendants(script.Parent:FindFirstChild("client"))
 Cmdr:SetActivationKeys({ Enum.KeyCode.F2 })
 
 Knit.Start()
-:andThen(function()
-	print(("[CLIENT_%s] Knit Initialized; developed by @arkizen."):format(Players.LocalPlayer.UserId))
-end)
-:catch(warn)
+	:andThen(function()
+		print(("[CLIENT_%s] Knit Initialized; developed by @arkizen."):format(Players.LocalPlayer.UserId))
+	end)
+	:catch(warn)
 
 print(utilities)

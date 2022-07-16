@@ -6,7 +6,8 @@ local Chat = game:GetService("Chat")
 local ReplicatedModules = Chat:WaitForChild("ClientChatModules")
 local ChatConstants = require(ReplicatedModules:WaitForChild("ChatConstants"))
 
-local FFlagAddChatThrottlingToAllChannels = false do
+local FFlagAddChatThrottlingToAllChannels = false
+do
 	local ok, value = pcall(function()
 		return UserSettings():IsUserFeatureEnabled("UserAddChatThrottlingToAllChannels")
 	end)
@@ -28,11 +29,17 @@ local floodCheckTable = {}
 local whitelistedSpeakers = {}
 
 local ChatLocalization = nil
-pcall(function() ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any) end)
-if ChatLocalization == nil then ChatLocalization = {} end
+pcall(function()
+	ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any)
+end)
+if ChatLocalization == nil then
+	ChatLocalization = {}
+end
 
 if not ChatLocalization.FormatMessageToSend or not ChatLocalization.LocalizeFormattedMessage then
-	function ChatLocalization:FormatMessageToSend(key,default) return default end
+	function ChatLocalization:FormatMessageToSend(key, default)
+		return default
+	end
 end
 
 local function EnterTimeIntoLog(tbl)
@@ -41,20 +48,26 @@ end
 
 local function Run(ChatService)
 	local function FloodDetectionProcessCommandsFunction(speakerName, message, channel)
-		if (whitelistedSpeakers[speakerName]) then return false end
+		if whitelistedSpeakers[speakerName] then
+			return false
+		end
 
 		local speakerObj = ChatService:GetSpeaker(speakerName)
-		if (not speakerObj) then return false end
-		if (chatBotsBypassFloodCheck and not speakerObj:GetPlayer()) then return false end
+		if not speakerObj then
+			return false
+		end
+		if chatBotsBypassFloodCheck and not speakerObj:GetPlayer() then
+			return false
+		end
 
-		if (not floodCheckTable[speakerName]) then
+		if not floodCheckTable[speakerName] then
 			floodCheckTable[speakerName] = {}
 		end
 
 		local t = nil
 
-		if (doFloodCheckByChannel) then
-			if (not floodCheckTable[speakerName][channel]) then
+		if doFloodCheckByChannel then
+			if not floodCheckTable[speakerName][channel] then
 				floodCheckTable[speakerName][channel] = {}
 			end
 
@@ -64,20 +77,24 @@ local function Run(ChatService)
 		end
 
 		local now = tick()
-		while (#t > 0 and t[1] < now) do
+		while #t > 0 and t[1] < now do
 			table.remove(t, 1)
 		end
 
-		if (#t < numberMessagesAllowed) then
+		if #t < numberMessagesAllowed then
 			EnterTimeIntoLog(t)
 			return false
 		else
-
 			local timeDiff = math.ceil(t[1] - now)
 
-			if (informSpeakersOfWaitTimes) then
-				local msg = ChatLocalization:FormatMessageToSend("GameChat_ChatFloodDetector_MessageDisplaySeconds",
-					string.format("You must wait %d %s before sending another message!", timeDiff, (timeDiff > 1) and "seconds" or "second"),
+			if informSpeakersOfWaitTimes then
+				local msg = ChatLocalization:FormatMessageToSend(
+					"GameChat_ChatFloodDetector_MessageDisplaySeconds",
+					string.format(
+						"You must wait %d %s before sending another message!",
+						timeDiff,
+						(timeDiff > 1) and "seconds" or "second"
+					),
 					"RBX_NUMBER",
 					tostring(timeDiff)
 				)
@@ -87,15 +104,20 @@ local function Run(ChatService)
 					ChatLocalization:FormatMessageToSend(
 						"GameChat_ChatFloodDetector_Message",
 						"You must wait before sending another message!"
-					)
-				,channel)
+					),
+					channel
+				)
 			end
 
 			return true
 		end
 	end
 
-	ChatService:RegisterProcessCommandsFunction("flood_detection", FloodDetectionProcessCommandsFunction, ChatConstants.LowPriority)
+	ChatService:RegisterProcessCommandsFunction(
+		"flood_detection",
+		FloodDetectionProcessCommandsFunction,
+		ChatConstants.LowPriority
+	)
 
 	ChatService.SpeakerRemoved:connect(function(speakerName)
 		floodCheckTable[speakerName] = nil

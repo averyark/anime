@@ -8,7 +8,6 @@ local ChatConstants = require(ReplicatedModules:WaitForChild("ChatConstants"))
 local ChatSettings = require(ReplicatedModules:WaitForChild("ChatSettings"))
 
 local function Run(ChatService)
-
 	if ChatSettings and ChatSettings.AllowMeCommand then
 		local function MeCommandFilterFunction(speakerName, messageObj, channelName)
 			local message = messageObj.Message

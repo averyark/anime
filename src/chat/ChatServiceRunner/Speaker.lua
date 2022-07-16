@@ -12,7 +12,8 @@ local ChatSettings = require(ReplicatedModules:WaitForChild("ChatSettings"))
 
 local modulesFolder = script.Parent
 
-local UserFlagRemoveMessageOnTextFilterFailures do
+local UserFlagRemoveMessageOnTextFilterFailures
+do
 	local success, value = pcall(function()
 		return UserSettings():IsUserFeatureEnabled("UserRemoveMessageOnTextFilterFailures")
 	end)
@@ -31,9 +32,8 @@ end
 
 local methods = {}
 
-local lazyEventNames =
-{
-    eDestroyed = true,
+local lazyEventNames = {
+	eDestroyed = true,
 	eSaidMessage = true,
 	eReceivedMessage = true,
 	eReceivedUnfilteredMessage = true,
@@ -47,13 +47,12 @@ local lazyEventNames =
 	eMainChannelSet = true,
 	eChannelNameColorUpdated = true,
 }
-local lazySignalNames =
-{
+local lazySignalNames = {
 	Destroyed = "eDestroyed",
 	SaidMessage = "eSaidMessage",
 	ReceivedMessage = "eReceivedMessage",
 	ReceivedUnfilteredMessage = "eReceivedUnfilteredMessage",
-    RecievedUnfilteredMessage = "eReceivedUnfilteredMessage", -- legacy mispelling
+	RecievedUnfilteredMessage = "eReceivedUnfilteredMessage", -- legacy mispelling
 	MessageDoneFiltering = "eMessageDoneFiltering",
 	ReceivedSystemMessage = "eReceivedSystemMessage",
 	ChannelJoined = "eChannelJoined",
@@ -62,24 +61,26 @@ local lazySignalNames =
 	Unmuted = "eUnmuted",
 	ExtraDataUpdated = "eExtraDataUpdated",
 	MainChannelSet = "eMainChannelSet",
-	ChannelNameColorUpdated = "eChannelNameColorUpdated"
+	ChannelNameColorUpdated = "eChannelNameColorUpdated",
 }
 
-methods.__index = function (self, k)
+methods.__index = function(self, k)
 	local fromMethods = rawget(methods, k)
-	if fromMethods then return fromMethods end
+	if fromMethods then
+		return fromMethods
+	end
 
-    if lazyEventNames[k] and not rawget(self, k) then
-        rawset(self, k, Instance.new("BindableEvent"))
-    end
-    local lazySignalEventName = lazySignalNames[k]
-    if lazySignalEventName and not rawget(self, k) then
-        if not rawget(self, lazySignalEventName) then
-            rawset(self, lazySignalEventName, Instance.new("BindableEvent"))
-        end
-        rawset(self, k, rawget(self, lazySignalEventName).Event)
-    end
-    return rawget(self, k)
+	if lazyEventNames[k] and not rawget(self, k) then
+		rawset(self, k, Instance.new("BindableEvent"))
+	end
+	local lazySignalEventName = lazySignalNames[k]
+	if lazySignalEventName and not rawget(self, k) then
+		if not rawget(self, lazySignalEventName) then
+			rawset(self, lazySignalEventName, Instance.new("BindableEvent"))
+		end
+		rawset(self, k, rawget(self, lazySignalEventName).Event)
+	end
+	return rawget(self, k)
 end
 
 function methods:LazyFire(eventName, ...)
@@ -113,13 +114,13 @@ function methods:SayMessage(message, channelName, extraData)
 end
 
 function methods:JoinChannel(channelName)
-	if (self.Channels[channelName:lower()]) then
+	if self.Channels[channelName:lower()] then
 		warn("Speaker is already in channel \"" .. channelName .. "\"")
 		return
 	end
 
 	local channel = self.ChatService:GetChannel(channelName)
-	if (not channel) then
+	if not channel then
 		error("Channel \"" .. channelName .. "\" does not exist!")
 	end
 
@@ -129,12 +130,12 @@ function methods:JoinChannel(channelName)
 		self.eChannelJoined:Fire(channel.Name, channel:GetWelcomeMessageForSpeaker(self))
 	end)
 	if not success and err then
-		print("Error joining channel: " ..err)
+		print("Error joining channel: " .. err)
 	end
 end
 
 function methods:LeaveChannel(channelName)
-	if (not self.Channels[channelName:lower()]) then
+	if not self.Channels[channelName:lower()] then
 		warn("Speaker is not in channel \"" .. channelName .. "\"")
 		return
 	end
@@ -150,7 +151,7 @@ function methods:LeaveChannel(channelName)
 		end
 	end)
 	if not success and err then
-		print("Error leaving channel: " ..err)
+		print("Error leaving channel: " .. err)
 	end
 end
 
@@ -168,23 +169,31 @@ end
 
 function methods:SendMessage(message, channelName, fromSpeaker, extraData)
 	local channel = self.Channels[channelName:lower()]
-	if (channel) then
+	if channel then
 		channel:SendMessageToSpeaker(message, self.Name, fromSpeaker, extraData)
-
 	elseif RunService:IsStudio() then
-		warn(string.format("Speaker '%s' is not in channel '%s' and cannot receive a message in it.", self.Name, channelName))
-
+		warn(
+			string.format(
+				"Speaker '%s' is not in channel '%s' and cannot receive a message in it.",
+				self.Name,
+				channelName
+			)
+		)
 	end
 end
 
 function methods:SendSystemMessage(message, channelName, extraData)
 	local channel = self.Channels[channelName:lower()]
-	if (channel) then
+	if channel then
 		channel:SendSystemMessageToSpeaker(message, self.Name, extraData)
-
 	elseif RunService:IsStudio() then
-		warn(string.format("Speaker '%s' is not in channel '%s' and cannot receive a system message in it.", self.Name, channelName))
-
+		warn(
+			string.format(
+				"Speaker '%s' is not in channel '%s' and cannot receive a system message in it.",
+				self.Name,
+				channelName
+			)
+		)
 	end
 end
 
@@ -223,7 +232,7 @@ function methods:SetMainChannel(channelName)
 		end
 	end)
 	if not success and err then
-		print("Error setting main channel: " ..err)
+		print("Error setting main channel: " .. err)
 	end
 end
 
@@ -281,7 +290,7 @@ function methods:InternalSendMessage(messageObj, channelName)
 		end
 	end)
 	if not success and err then
-		print("Error sending internal message: " ..err)
+		print("Error sending internal message: " .. err)
 	end
 end
 
@@ -294,7 +303,7 @@ function methods:InternalSendFilteredMessage(messageObj, channelName)
 		end
 	end)
 	if not success and err then
-		print("Error sending internal filtered message: " ..err)
+		print("Error sending internal filtered message: " .. err)
 	end
 end
 
@@ -309,8 +318,8 @@ function methods:InternalSendFilteredMessageWithFilterResult(inMessageObj, chann
 
 	local msg = ""
 	pcall(function()
-		if (messageObj.IsFilterResult) then
-			if (player) then
+		if messageObj.IsFilterResult then
+			if player then
 				msg = oldFilterResult:GetChatForUserAsync(player.UserId)
 			else
 				msg = oldFilterResult:GetNonChatStringForBroadcastAsync()
@@ -329,7 +338,7 @@ function methods:InternalSendFilteredMessageWithFilterResult(inMessageObj, chann
 		messageObj.FilterResult = nil
 		self:InternalSendFilteredMessage(messageObj, channelName)
 	else
-		if (#msg > 0) then
+		if #msg > 0 then
 			messageObj.Message = msg
 			messageObj.FilterResult = nil
 			self:InternalSendFilteredMessage(messageObj, channelName)
@@ -345,7 +354,7 @@ function methods:InternalSendSystemMessage(messageObj, channelName)
 		end
 	end)
 	if not success and err then
-		print("Error sending internal system message: " ..err)
+		print("Error sending internal system message: " .. err)
 	end
 end
 

@@ -29,8 +29,7 @@ local methods = {}
 methods.__index = methods
 
 function methods:SendSystemMessageToSelf(message, channelObj, extraData)
-	local messageData =
-	{
+	local messageData = {
 		ID = -1,
 		FromSpeaker = nil,
 		SpeakerUserId = 0,

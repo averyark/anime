@@ -1,4 +1,4 @@
-local CurveUtil = {	}
+local CurveUtil = {}
 local DEFAULT_THRESHOLD = 0.01
 
 function CurveUtil:Expt(start, to, pct, dt_scale)
@@ -6,7 +6,7 @@ function CurveUtil:Expt(start, to, pct, dt_scale)
 		return to
 	end
 
-	local y = CurveUtil:Expty(start,to,pct,dt_scale)
+	local y = CurveUtil:Expty(start, to, pct, dt_scale)
 
 	--rtv = start + (to - start) * timescaled_friction--
 	local delta = (to - start) * y
@@ -32,22 +32,16 @@ end
 
 function CurveUtil:BezierValForT(p0, p1, p2, p3, t)
 	local cp0 = (1 - t) * (1 - t) * (1 - t)
-	local cp1 = 3 * t * (1-t)*(1-t)
+	local cp1 = 3 * t * (1 - t) * (1 - t)
 	local cp2 = 3 * t * t * (1 - t)
 	local cp3 = t * t * t
 	return cp0 * p0 + cp1 * p1 + cp2 * p2 + cp3 * p3
 end
 
-CurveUtil._BezierPt2ForT = { x = 0; y = 0 }
-function CurveUtil:BezierPt2ForT(
-	p0x, p0y,
-	p1x, p1y,
-	p2x, p2y,
-	p3x, p3y,
-	t)
-
-	CurveUtil._BezierPt2ForT.x = CurveUtil:BezierValForT(p0x,p1x,p2x,p3x,t)
-	CurveUtil._BezierPt2ForT.y = CurveUtil:BezierValForT(p0y,p1y,p2y,p3y,t)
+CurveUtil._BezierPt2ForT = { x = 0, y = 0 }
+function CurveUtil:BezierPt2ForT(p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y, t)
+	CurveUtil._BezierPt2ForT.x = CurveUtil:BezierValForT(p0x, p1x, p2x, p3x, t)
+	CurveUtil._BezierPt2ForT.y = CurveUtil:BezierValForT(p0y, p1y, p2y, p3y, t)
 	return CurveUtil._BezierPt2ForT
 end
 
@@ -68,11 +62,11 @@ function CurveUtil:SecondsToTick(sec)
 end
 
 function CurveUtil:ExptValueInSeconds(threshold, start, seconds)
-		return 1 - math.pow((threshold / start), 1 / (60.0 * seconds))
+	return 1 - math.pow((threshold / start), 1 / (60.0 * seconds))
 end
 
 function CurveUtil:NormalizedDefaultExptValueInSeconds(seconds)
-		return self:ExptValueInSeconds(DEFAULT_THRESHOLD, 1, seconds)
+	return self:ExptValueInSeconds(DEFAULT_THRESHOLD, 1, seconds)
 end
 
 return CurveUtil

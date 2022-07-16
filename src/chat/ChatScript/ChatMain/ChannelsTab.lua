@@ -74,7 +74,7 @@ local function CreateGuiObjects()
 	BlueBarLeft.Size = UDim2.new(0.5, -borderXOffset, 0, blueBarYSize)
 	BlueBarLeft.BackgroundTransparency = 1
 	BlueBarLeft.ScaleType = Enum.ScaleType.Slice
-	BlueBarLeft.SliceCenter = Rect.new(3,3,32,21)
+	BlueBarLeft.SliceCenter = Rect.new(3, 3, 32, 21)
 	BlueBarLeft.Parent = SelectedFrame
 
 	local BlueBarRight = BlueBarLeft:Clone()
@@ -141,7 +141,9 @@ function methods:Destroy()
 end
 
 function methods:UpdateMessagePostedInChannel(ignoreActive)
-	if (self.Active and (ignoreActive ~= true)) then return end
+	if self.Active and (ignoreActive ~= true) then
+		return
+	end
 
 	local count = self.UnreadMessageCount + 1
 	self.UnreadMessageCount = count
@@ -160,7 +162,6 @@ function methods:UpdateMessagePostedInChannel(ignoreActive)
 
 	label.Position = UDim2.new(0, 0, -0.15, 0)
 	label:TweenPosition(UDim2.new(0, 0, 0, 0), easingDirection, easingStyle, tweenTime, true)
-
 end
 
 function methods:SetActive(active)
@@ -168,14 +169,13 @@ function methods:SetActive(active)
 	self.UnselectedFrame.Visible = not active
 	self.SelectedFrame.Visible = active
 
-	if (active) then
+	if active then
 		self.UnreadMessageCount = 0
 		self.NewMessageIcon.Visible = false
 
 		self.NameTag.Font = Enum.Font.SourceSansBold
 	else
 		self.NameTag.Font = Enum.Font.SourceSans
-
 	end
 end
 
@@ -241,22 +241,22 @@ end
 
 function methods:Update(dtScale)
 	self.AnimParams.Background_CurrentTransparency = CurveUtil:Expt(
-			self.AnimParams.Background_CurrentTransparency,
-			self.AnimParams.Background_TargetTransparency,
-			self.AnimParams.Background_NormalizedExptValue,
-			dtScale
+		self.AnimParams.Background_CurrentTransparency,
+		self.AnimParams.Background_TargetTransparency,
+		self.AnimParams.Background_NormalizedExptValue,
+		dtScale
 	)
 	self.AnimParams.Text_CurrentTransparency = CurveUtil:Expt(
-			self.AnimParams.Text_CurrentTransparency,
-			self.AnimParams.Text_TargetTransparency,
-			self.AnimParams.Text_NormalizedExptValue,
-			dtScale
+		self.AnimParams.Text_CurrentTransparency,
+		self.AnimParams.Text_TargetTransparency,
+		self.AnimParams.Text_NormalizedExptValue,
+		dtScale
 	)
 	self.AnimParams.TextStroke_CurrentTransparency = CurveUtil:Expt(
-			self.AnimParams.TextStroke_CurrentTransparency,
-			self.AnimParams.TextStroke_TargetTransparency,
-			self.AnimParams.TextStroke_NormalizedExptValue,
-			dtScale
+		self.AnimParams.TextStroke_CurrentTransparency,
+		self.AnimParams.TextStroke_TargetTransparency,
+		self.AnimParams.TextStroke_NormalizedExptValue,
+		dtScale
 	)
 
 	self:AnimGuiObjects()
@@ -268,7 +268,8 @@ end
 function module.new(channelName)
 	local obj = setmetatable({}, methods)
 
-	local BaseFrame, NameTag, NameTagNonSelect, NameTagSelect, NewMessageIcon, UnselectedFrame, SelectedFrame = CreateGuiObjects()
+	local BaseFrame, NameTag, NameTagNonSelect, NameTagSelect, NewMessageIcon, UnselectedFrame, SelectedFrame =
+		CreateGuiObjects()
 	obj.GuiObject = BaseFrame
 	obj.NameTag = NameTag
 	obj.NameTagNonSelect = NameTagNonSelect
@@ -288,7 +289,7 @@ function module.new(channelName)
 
 	obj.GuiObject.Name = "Frame_" .. obj.ChannelName
 
-	if (string.len(channelName) > ChatSettings.MaxChannelNameLength) then
+	if string.len(channelName) > ChatSettings.MaxChannelNameLength then
 		channelName = string.sub(channelName, 1, ChatSettings.MaxChannelNameLength - 3) .. "..."
 	end
 

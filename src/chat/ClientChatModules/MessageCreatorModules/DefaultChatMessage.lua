@@ -8,7 +8,6 @@ local ChatConstants = require(clientChatModules:WaitForChild("ChatConstants"))
 local util = require(script.Parent:WaitForChild("Util"))
 
 function CreateMessageLabel(messageData, channelName)
-
 	local fromSpeaker = messageData.FromSpeaker
 	local speakerName
 
@@ -39,10 +38,20 @@ function CreateMessageLabel(messageData, channelName)
 	local guiObjectSpacing = UDim2.new(0, 0, 0, 0)
 
 	if channelName ~= messageData.OriginalChannel then
-			local formatChannelName = string.format("{%s}", messageData.OriginalChannel)
-			ChannelButton = util:AddChannelButtonToBaseMessage(BaseMessage, useChannelColor, formatChannelName, messageData.OriginalChannel)
-			guiObjectSpacing = UDim2.new(0, ChannelButton.Size.X.Offset + util:GetStringTextBounds(" ", useFont, useTextSize).X, 0, 0)
-			numNeededSpaces = numNeededSpaces + util:GetNumberOfSpaces(formatChannelName, useFont, useTextSize) + 1
+		local formatChannelName = string.format("{%s}", messageData.OriginalChannel)
+		ChannelButton = util:AddChannelButtonToBaseMessage(
+			BaseMessage,
+			useChannelColor,
+			formatChannelName,
+			messageData.OriginalChannel
+		)
+		guiObjectSpacing = UDim2.new(
+			0,
+			ChannelButton.Size.X.Offset + util:GetStringTextBounds(" ", useFont, useTextSize).X,
+			0,
+			0
+		)
+		numNeededSpaces = numNeededSpaces + util:GetNumberOfSpaces(formatChannelName, useFont, useTextSize) + 1
 	end
 
 	local tagLabels = {}
@@ -78,27 +87,27 @@ function CreateMessageLabel(messageData, channelName)
 
 	local FadeParmaters = {}
 	FadeParmaters[NameButton] = {
-		TextTransparency = {FadedIn = 0, FadedOut = 1},
-		TextStrokeTransparency = {FadedIn = 0, FadedOut = 1}
+		TextTransparency = { FadedIn = 0, FadedOut = 1 },
+		TextStrokeTransparency = { FadedIn = 0, FadedOut = 1 },
 	}
 
 	FadeParmaters[BaseMessage] = {
-		TextTransparency = {FadedIn = 0, FadedOut = 1},
-		TextStrokeTransparency = {FadedIn = 0, FadedOut = 1}
+		TextTransparency = { FadedIn = 0, FadedOut = 1 },
+		TextStrokeTransparency = { FadedIn = 0, FadedOut = 1 },
 	}
 
 	for i, tagLabel in pairs(tagLabels) do
 		local index = string.format("Tag%d", i)
 		FadeParmaters[tagLabel] = {
-			TextTransparency = {FadedIn = 0, FadedOut = 1},
-			TextStrokeTransparency = {FadedIn = 0, FadedOut = 1}
+			TextTransparency = { FadedIn = 0, FadedOut = 1 },
+			TextStrokeTransparency = { FadedIn = 0, FadedOut = 1 },
 		}
 	end
 
 	if ChannelButton then
 		FadeParmaters[ChannelButton] = {
-			TextTransparency = {FadedIn = 0, FadedOut = 1},
-			TextStrokeTransparency = {FadedIn = 0, FadedOut = 1}
+			TextTransparency = { FadedIn = 0, FadedOut = 1 },
+			TextStrokeTransparency = { FadedIn = 0, FadedOut = 1 },
 		}
 	end
 
@@ -111,11 +120,11 @@ function CreateMessageLabel(messageData, channelName)
 		[util.KEY_GET_HEIGHT] = GetHeightFunction,
 		[util.KEY_FADE_IN] = FadeInFunction,
 		[util.KEY_FADE_OUT] = FadeOutFunction,
-		[util.KEY_UPDATE_ANIMATION] = UpdateAnimFunction
+		[util.KEY_UPDATE_ANIMATION] = UpdateAnimFunction,
 	}
 end
 
 return {
 	[util.KEY_MESSAGE_TYPE] = ChatConstants.MessageTypeDefault,
-	[util.KEY_CREATOR_FUNCTION] = CreateMessageLabel
+	[util.KEY_CREATOR_FUNCTION] = CreateMessageLabel,
 }

@@ -29,8 +29,15 @@ local WhisperModule = require(commandModules:WaitForChild("Whisper"))
 local MessageSender = require(modulesFolder:WaitForChild("MessageSender"))
 
 local ChatLocalization = nil
-pcall(function() ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any) end)
-if ChatLocalization == nil then ChatLocalization = {} function ChatLocalization:Get(key,default) return default end end
+pcall(function()
+	ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any)
+end)
+if ChatLocalization == nil then
+	ChatLocalization = {}
+	function ChatLocalization:Get(key, default)
+		return default
+	end
+end
 
 --////////////////////////////// Methods
 --//////////////////////////////////////
@@ -119,7 +126,7 @@ function methods:CreateGuiObjects(targetParent)
 
 	self.GuiObject = BaseFrame
 	self.TextBox = TextBox
-	self.TextLabel  = TextLabel
+	self.TextLabel = TextLabel
 
 	self.GuiObjects.BaseFrame = BaseFrame
 	self.GuiObjects.TextBoxFrame = BoxFrame
@@ -144,10 +151,7 @@ function methods:DoLockChatBar()
 				"To chat in game, turn on chat in your Privacy Settings."
 			)
 		else
-			self.TextLabel.Text = ChatLocalization:Get(
-				"GameChat_SwallowGuestChat_Message",
-				"Sign up to chat in game."
-			)
+			self.TextLabel.Text = ChatLocalization:Get("GameChat_SwallowGuestChat_Message", "Sign up to chat in game.")
 		end
 		self:CalculateSize()
 	end
@@ -168,8 +172,8 @@ function methods:SetUpTextBoxEvents(TextBox, TextLabel, MessageModeTextButton)
 
 	--// Code for getting back into general channel from other target channel when pressing backspace.
 	self.TextBoxConnections.UserInputBegan = UserInputService.InputBegan:connect(function(inputObj, gpe)
-		if (inputObj.KeyCode == Enum.KeyCode.Backspace) then
-			if (self:IsFocused() and TextBox.Text == "") then
+		if inputObj.KeyCode == Enum.KeyCode.Backspace then
+			if self:IsFocused() and TextBox.Text == "" then
 				self:SetChannelTarget(ChatSettings.GeneralChannelName)
 			end
 		end
@@ -227,7 +231,7 @@ function methods:SetUpTextBoxEvents(TextBox, TextLabel, MessageModeTextButton)
 
 	self.TextBoxConnections.TextBoxFocusLost = TextBox.FocusLost:connect(function(enterPressed, inputObject)
 		self:CalculateSize()
-		if (inputObject and inputObject.KeyCode == Enum.KeyCode.Escape) then
+		if inputObject and inputObject.KeyCode == Enum.KeyCode.Escape then
 			TextBox.Text = ""
 		end
 		UpdateOnFocusStatusChanged(false)
@@ -338,7 +342,7 @@ function methods:CalculateSize()
 	end
 
 	local newTargetYSize = bounds - textSize
-	if (self.TargetYSize ~= newTargetYSize) then
+	if self.TargetYSize ~= newTargetYSize then
 		self.TargetYSize = newTargetYSize
 		self:TweenToTargetYSize()
 	end
@@ -358,8 +362,10 @@ function methods:TweenToTargetYSize()
 	local pixelDistance = math.abs(endAbsoluteSizeY - curAbsoluteSizeY)
 	local tweeningTime = math.min(1, (pixelDistance * (1 / self.TweenPixelsPerSecond))) -- pixelDistance * (seconds per pixels)
 
-	local success = pcall(function() self.GuiObject:TweenSize(endSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, tweeningTime, true) end)
-	if (not success) then
+	local success = pcall(function()
+		self.GuiObject:TweenSize(endSize, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, tweeningTime, true)
+	end)
+	if not success then
 		self.GuiObject.Size = endSize
 	end
 end
@@ -435,10 +441,7 @@ function methods:ResetCustomState()
 		self.ChatBarParentFrame:ClearAllChildren()
 		self:CreateGuiObjects(self.ChatBarParentFrame)
 		self:SetTextLabelText(
-			ChatLocalization:Get(
-				"GameChat_ChatMain_ChatBarText",
-				'To chat click here or press "/" key'
-			)
+			ChatLocalization:Get("GameChat_ChatMain_ChatBarText", "To chat click here or press \"/\" key")
 		)
 	end
 end
@@ -446,12 +449,7 @@ end
 function methods:EnterWhisperState(player)
 	self:ResetCustomState()
 	if WhisperModule.CustomStateCreator then
-		self.CustomState = WhisperModule.CustomStateCreator(
-			player,
-			self.ChatWindow,
-			self,
-			ChatSettings
-		)
+		self.CustomState = WhisperModule.CustomStateCreator(player, self.ChatWindow, self, ChatSettings)
 		self.InCustomState = true
 	else
 		local playerName
@@ -524,16 +522,16 @@ end
 
 function methods:Update(dtScale)
 	self.AnimParams.Text_CurrentTransparency = CurveUtil:Expt(
-			self.AnimParams.Text_CurrentTransparency,
-			self.AnimParams.Text_TargetTransparency,
-			self.AnimParams.Text_NormalizedExptValue,
-			dtScale
+		self.AnimParams.Text_CurrentTransparency,
+		self.AnimParams.Text_TargetTransparency,
+		self.AnimParams.Text_NormalizedExptValue,
+		dtScale
 	)
 	self.AnimParams.Background_CurrentTransparency = CurveUtil:Expt(
-			self.AnimParams.Background_CurrentTransparency,
-			self.AnimParams.Background_TargetTransparency,
-			self.AnimParams.Background_NormalizedExptValue,
-			dtScale
+		self.AnimParams.Background_CurrentTransparency,
+		self.AnimParams.Background_TargetTransparency,
+		self.AnimParams.Background_NormalizedExptValue,
+		dtScale
 	)
 
 	self:AnimGuiObjects()
@@ -586,7 +584,7 @@ function module.new(CommandProcessor, ChatWindow)
 	obj:InitializeAnimParams()
 
 	ChatSettings.SettingsChanged:connect(function(setting, value)
-		if (setting == "ChatBarTextSize") then
+		if setting == "ChatBarTextSize" then
 			obj:SetTextSize(value)
 		end
 	end)
@@ -601,7 +599,6 @@ function module.new(CommandProcessor, ChatWindow)
 			obj:DoLockChatBar()
 		end
 	end)()
-
 
 	return obj
 end

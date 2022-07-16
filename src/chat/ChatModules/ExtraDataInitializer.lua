@@ -7,7 +7,7 @@ local SpecialChatColors = {
 		{
 			--- ROBLOX Admins group
 			GroupId = 1200769,
-			ChatColor = Color3.new(1, 215/255, 0),
+			ChatColor = Color3.new(1, 215 / 255, 0),
 		},
 	},
 	Players = {
@@ -15,8 +15,8 @@ local SpecialChatColors = {
 			--- Left as an example
 			--  UserId = 2231221,
 			--  ChatColor = Color3.new(205/255, 0, 0)
-		}
-	}
+		},
+	},
 }
 
 local function MakeIsInGroup(groupId, requiredRank)
@@ -35,7 +35,7 @@ local function MakeIsInGroup(groupId, requiredRank)
 				end
 			end)
 			if not success and err then
-				print("Error checking in group: " ..err)
+				print("Error checking in group: " .. err)
 			end
 
 			return inGroup
@@ -77,11 +77,10 @@ local function GetSpecialChatColor(speakerName)
 end
 
 local function Run(ChatService)
-	local NAME_COLORS =
-	{
-		Color3.new(253/255, 41/255, 67/255), -- BrickColor.new("Bright red").Color,
-		Color3.new(1/255, 162/255, 255/255), -- BrickColor.new("Bright blue").Color,
-		Color3.new(2/255, 184/255, 87/255), -- BrickColor.new("Earth green").Color,
+	local NAME_COLORS = {
+		Color3.new(253 / 255, 41 / 255, 67 / 255), -- BrickColor.new("Bright red").Color,
+		Color3.new(1 / 255, 162 / 255, 255 / 255), -- BrickColor.new("Bright blue").Color,
+		Color3.new(2 / 255, 184 / 255, 87 / 255), -- BrickColor.new("Earth green").Color,
 		BrickColor.new("Bright violet").Color,
 		BrickColor.new("Bright orange").Color,
 		BrickColor.new("Bright yellow").Color,
@@ -94,10 +93,10 @@ local function Run(ChatService)
 		for index = 1, #pName do
 			local cValue = string.byte(string.sub(pName, index, index))
 			local reverseIndex = #pName - index + 1
-			if #pName%2 == 1 then
+			if #pName % 2 == 1 then
 				reverseIndex = reverseIndex - 1
 			end
-			if reverseIndex%4 >= 2 then
+			if reverseIndex % 4 >= 2 then
 				cValue = -cValue
 			end
 			value = value + cValue

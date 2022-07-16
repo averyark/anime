@@ -8,7 +8,9 @@ local ChatSettings = require(script.Parent.Parent:WaitForChild("ChatSettings"))
 local PlayersService = game:GetService("Players")
 
 local ChatLocalization = nil
-pcall(function() ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any) end)
+pcall(function()
+	ChatLocalization = require(game:GetService("Chat").ClientChatModules.ChatLocalization :: any)
+end)
 
 local LocalPlayer = PlayersService.LocalPlayer
 while LocalPlayer == nil do
@@ -26,7 +28,7 @@ function whisperStateMethods:TrimWhisperCommand(text)
 		return string.sub(text, 4)
 	elseif string.sub(text, 1, 9):lower() == "/whisper " then
 		return string.sub(text, 10)
- 	end
+	end
 	return nil
 end
 
@@ -160,7 +162,7 @@ end
 
 function whisperStateMethods:GetMessage()
 	if self.PlayerNameEntered then
-		return "/w " ..self.PlayerName.. " " ..self.TextBox.Text
+		return "/w " .. self.PlayerName .. " " .. self.TextBox.Text
 	end
 	return self.TextBox.Text
 end
@@ -205,7 +207,7 @@ function WhisperCustomState.new(ChatWindow, ChatBar, ChatSettings, player)
 end
 
 function ProcessMessage(message, ChatWindow, ChatBar, ChatSettings)
-	if string.sub(message, 1, 3):lower() == "/w " or	string.sub(message, 1, 9):lower() == "/whisper " then
+	if string.sub(message, 1, 3):lower() == "/w " or string.sub(message, 1, 9):lower() == "/whisper " then
 		return WhisperCustomState.new(ChatWindow, ChatBar, ChatSettings)
 	end
 	return nil

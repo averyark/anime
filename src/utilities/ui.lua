@@ -39,10 +39,10 @@ local listeners = {}
 
 ui.__index = ui
 
-ui.__resetInterface = function(self : ui)
-    self.uiObject = self._realUiObject:Clone()
-    self.uiObject.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
-    self.onInit:Fire(self.uiObject)
+ui.__resetInterface = function(self: ui)
+	self.uiObject = self._realUiObject:Clone()
+	self.uiObject.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+	self.onInit:Fire(self.uiObject)
 end
 
 --[[
@@ -56,18 +56,18 @@ end
  end)
 	```
 ]]
-ui.observe = function(self : ui, callbackInit : (ui: ui) -> (), callbackDeinit : (ui: ui) -> ()?)
-    if self.uiObject and self.uiObject:IsDescendantOf(Players.LocalPlayer.PlayerGui) then
-        callbackInit(self);
-    end
-    self._maid:Add(self.onInit:Connect(function()
-        callbackInit(self);
-    end))
-    if callbackDeinit then
-        self._maid:Add(self.onDeinit:Connect(function()
-            callbackDeinit(self)
-        end))
-    end
+ui.observe = function(self: ui, callbackInit: (ui: ui) -> (), callbackDeinit: (ui: ui) -> ()?)
+	if self.uiObject and self.uiObject:IsDescendantOf(Players.LocalPlayer.PlayerGui) then
+		callbackInit(self)
+	end
+	self._maid:Add(self.onInit:Connect(function()
+		callbackInit(self)
+	end))
+	if callbackDeinit then
+		self._maid:Add(self.onDeinit:Connect(function()
+			callbackDeinit(self)
+		end))
+	end
 end
 
 --[[
@@ -78,10 +78,10 @@ end
     utilities.ui.get("test"):destory()
     ```
 ]]
-ui.destroy = function(self : ui)
-    self.onDeinit:Fire(self.uiObject)
-    self._maid:Destroy()
-    userInterfaces[self._realUiObject.Name] = nil
+ui.destroy = function(self: ui)
+	self.onDeinit:Fire(self.uiObject)
+	self._maid:Destroy()
+	userInterfaces[self._realUiObject.Name] = nil
 end
 
 ui.Destroy = ui.destroy
@@ -94,57 +94,57 @@ ui.Destroy = ui.destroy
     ```
 ]]
 uiUtil.new = function(uiObject: ScreenGui | string)
-    t.strict(isInstance(uiObject))
-    t.strict(isScreenGui(uiObject) or t.string(uiObject))
+	t.strict(isInstance(uiObject))
+	t.strict(isScreenGui(uiObject) or t.string(uiObject))
 
-    local _realUiObject
-    
-    if not isScreenGui(uiObject) then
-        _realUiObject = ReplicatedStorage.Interface:FindFirstChild(uiObject)
-    else
-        _realUiObject = uiObject
-    end
+	local _realUiObject
 
-    if not isScreenGui(_realUiObject) then
-        error(("ui: Could not find UI object with name %s."):format(tostring(uiObject)))
-    end
+	if not isScreenGui(uiObject) then
+		_realUiObject = ReplicatedStorage.Interface:FindFirstChild(uiObject)
+	else
+		_realUiObject = uiObject
+	end
 
-    local self = setmetatable({
-        _realUiObject = _realUiObject,
-        _maid = Janitor.new(),
-        uiObject = _realUiObject:Clone(),
-        onInit = Signal.new(),
-        onDeinit = Signal.new(),
-    }, ui)
+	if not isScreenGui(_realUiObject) then
+		error(("ui: Could not find UI object with name %s."):format(tostring(uiObject)))
+	end
 
-    self._maid:Add(self._realUiObject.Destroying:Connect(function()
-        self:destroy()
-    end))
-    self._maid:Add(Players.LocalPlayer.CharacterRemoving:Connect(function(character)
-        self.uiObject:Destroy()
-        self.uiObject = nil
-        self.onDeinit:Fire(self.uiObject)
-    end))
-    self._maid:Add(Players.LocalPlayer.CharacterAdded:Connect(function(character)
-        if self._realUiObject.ResetOnSpawn then
-            self:__resetInterface()
-        end
-    end))
-    self._maid:Add(self.uiObject)
-    
-    userInterfaces[_realUiObject.Name] = self
-    self.uiObject.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+	local self = setmetatable({
+		_realUiObject = _realUiObject,
+		_maid = Janitor.new(),
+		uiObject = _realUiObject:Clone(),
+		onInit = Signal.new(),
+		onDeinit = Signal.new(),
+	}, ui)
 
-    local _uiListeners = listeners[self._realUiObject.Name]
+	self._maid:Add(self._realUiObject.Destroying:Connect(function()
+		self:destroy()
+	end))
+	self._maid:Add(Players.LocalPlayer.CharacterRemoving:Connect(function(character)
+		self.uiObject:Destroy()
+		self.uiObject = nil
+		self.onDeinit:Fire(self.uiObject)
+	end))
+	self._maid:Add(Players.LocalPlayer.CharacterAdded:Connect(function(character)
+		if self._realUiObject.ResetOnSpawn then
+			self:__resetInterface()
+		end
+	end))
+	self._maid:Add(self.uiObject)
 
-    if _uiListeners then
-        for _, thread in _uiListeners do
-            coroutine.resume(thread, self)
-            table.remove(listeners[self._realUiObject.Name], table.find(listeners[self._realUiObject.Name], thread))
-        end
-        listeners[self._realUiObject.Name] = nil
-    end
-    return self;
+	userInterfaces[_realUiObject.Name] = self
+	self.uiObject.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+	local _uiListeners = listeners[self._realUiObject.Name]
+
+	if _uiListeners then
+		for _, thread in _uiListeners do
+			coroutine.resume(thread, self)
+			table.remove(listeners[self._realUiObject.Name], table.find(listeners[self._realUiObject.Name], thread))
+		end
+		listeners[self._realUiObject.Name] = nil
+	end
+	return self
 end
 
 --[[
@@ -155,61 +155,65 @@ end
     utilities.ui.get("test") -- returns the UI Object
     ```
 ]]
-uiUtil.get = function(uiName : string, _trace : string?) : ui
-    if userInterfaces[uiName] then
-        return userInterfaces[uiName];
-    end
-    if not listeners[uiName] then
-        listeners[uiName] = {}
-    end
-    coroutine.resume(coroutine.create(function()
-        task.wait(5)
-        print(userInterfaces)
-        if not userInterfaces[uiName] then
-            warn(("[ui] %s might not be a valid Interface %s"):format(uiName, type(_trace) == "string" and "\n" .. _trace or ""))
-        end
-    end))
-    table.insert(listeners[uiName], coroutine.running())
-    return coroutine.yield();
+uiUtil.get = function(uiName: string, _trace: string?): ui
+	if userInterfaces[uiName] then
+		return userInterfaces[uiName]
+	end
+	if not listeners[uiName] then
+		listeners[uiName] = {}
+	end
+	coroutine.resume(coroutine.create(function()
+		task.wait(5)
+		print(userInterfaces)
+		if not userInterfaces[uiName] then
+			warn(
+				("[ui] %s might not be a valid Interface %s"):format(
+					uiName,
+					type(_trace) == "string" and "\n" .. _trace or ""
+				)
+			)
+		end
+	end))
+	table.insert(listeners[uiName], coroutine.running())
+	return coroutine.yield()
 end
 
 task.spawn(function()
-    if not RunService:IsClient() then
-        return;
-    end
+	if not RunService:IsClient() then
+		return
+	end
 
-    if not ReplicatedStorage:FindFirstChild("Interface") then
-        error("[ui] Interface folder is not present in ReplicatedStorage " .. debug.traceback())
-    end
+	if not ReplicatedStorage:FindFirstChild("Interface") then
+		error("[ui] Interface folder is not present in ReplicatedStorage " .. debug.traceback())
+	end
 
-    local pgui = Players.LocalPlayer:WaitForChild("PlayerGui")
+	local pgui = Players.LocalPlayer:WaitForChild("PlayerGui")
 
-    local test_hide = pgui:FindFirstChild("test-hide")
-    local test_run = pgui:FindFirstChild("test-run")
+	local test_hide = pgui:FindFirstChild("test-hide")
+	local test_run = pgui:FindFirstChild("test-run")
 
-    if test_hide then
-       for _, child in test_hide:GetChildren() do
-           child.Enabled = false
-       end
-    end
-    if test_run then
-        for _, child in test_run:GetChildren() do
-            if isScreenGui(child) and not userInterfaces[child.Name] then
-                uiUtil.new(child)
-            end
-        end
-    end
+	if test_hide then
+		for _, child in test_hide:GetChildren() do
+			child.Enabled = false
+		end
+	end
+	if test_run then
+		for _, child in test_run:GetChildren() do
+			if isScreenGui(child) and not userInterfaces[child.Name] then
+				uiUtil.new(child)
+			end
+		end
+	end
 
-    for _, interface in ReplicatedStorage.Interface:GetChildren() do
-        uiUtil.new(interface)
-    end
+	for _, interface in ReplicatedStorage.Interface:GetChildren() do
+		uiUtil.new(interface)
+	end
 
-    ReplicatedStorage.Interface.ChildAdded:Connect(function(child)
-        if isScreenGui(child) then
-            uiUtil.new(child)
-        end
-    end)
-
+	ReplicatedStorage.Interface.ChildAdded:Connect(function(child)
+		if isScreenGui(child) then
+			uiUtil.new(child)
+		end
+	end)
 end)
 
 --[[
@@ -221,11 +225,11 @@ end)
     end)
     ```
 ]]
-uiUtil.observeFor = function(uiName : string, callback : (ui: ui) -> ())
-    local trace = debug.traceback("", 2)
-    task.spawn(function()
-        uiUtil.get(uiName, trace):observe(callback)
-    end)
+uiUtil.observeFor = function(uiName: string, callback: (ui: ui) -> ())
+	local trace = debug.traceback("", 2)
+	task.spawn(function()
+		uiUtil.get(uiName, trace):observe(callback)
+	end)
 end
 
 export type ui = typeof(uiUtil.new(Instance.new("ScreenGui")))
@@ -234,4 +238,4 @@ return uiUtil --[[:: {
     new: typeof(uiUtil.new),
     get: typeof(ui.get),
     observeFor: (uiName: string, callback: (ui: ui) -> ()) -> ()
-}]];
+}]]

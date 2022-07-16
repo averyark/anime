@@ -121,8 +121,6 @@ function methods:CreateGuiObjects(targetParent)
 		LeaveConfirmationFrame:TweenPosition(outPos, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
 	end)
 
-
-
 	local scale = 0.7
 	local scaleOther = (1 - scale) / 2
 	local pageButtonImage = "rbxasset://textures/ui/Chat/TabArrowBackground.png"
@@ -132,7 +130,6 @@ function methods:CreateGuiObjects(targetParent)
 	--// These grab unchanging versions hosted on the site, and not from the content folder.
 	pageButtonImage = "rbxassetid://471630199"
 	pageButtonArrowImage = "rbxassetid://471630112"
-
 
 	local PageLeftButton = Instance.new("ImageButton", BaseFrame)
 	PageLeftButton.Selectable = ChatSettings.GamepadNavigationEnabled
@@ -170,7 +167,6 @@ function methods:CreateGuiObjects(targetParent)
 	PageLeftButton.ArrowLabel.Position = UDim2.new(0.3, 0, 0.3, 0) - positionOffset
 	PageLeftButton.ArrowLabel.Rotation = 180
 
-
 	self.GuiObject = BaseFrame
 
 	self.GuiObjects.BaseFrame = BaseFrame
@@ -185,16 +181,19 @@ function methods:CreateGuiObjects(targetParent)
 	self.GuiObjects.PageRightButtonArrow = PageRightButton.ArrowLabel
 	self:AnimGuiObjects()
 
-	PageLeftButton.MouseButton1Click:connect(function() self:ScrollChannelsFrame(-1) end)
-	PageRightButton.MouseButton1Click:connect(function() self:ScrollChannelsFrame(1) end)
+	PageLeftButton.MouseButton1Click:connect(function()
+		self:ScrollChannelsFrame(-1)
+	end)
+	PageRightButton.MouseButton1Click:connect(function()
+		self:ScrollChannelsFrame(1)
+	end)
 
 	self:ScrollChannelsFrame(0)
 end
 
-
 function methods:UpdateMessagePostedInChannel(channelName)
 	local tab = self:GetChannelTab(channelName)
-	if (tab) then
+	if tab then
 		tab:UpdateMessagePostedInChannel()
 	else
 		warn("ChannelsTab '" .. channelName .. "' does not exist!")
@@ -202,7 +201,7 @@ function methods:UpdateMessagePostedInChannel(channelName)
 end
 
 function methods:AddChannelTab(channelName)
-	if (self:GetChannelTab(channelName)) then
+	if self:GetChannelTab(channelName) then
 		error("Channel tab '" .. channelName .. "'already exists!")
 	end
 
@@ -213,11 +212,17 @@ function methods:AddChannelTab(channelName)
 	self.NumTabs = self.NumTabs + 1
 	self:OrganizeChannelTabs()
 
-	if (ChatSettings.RightClickToLeaveChannelEnabled) then
+	if ChatSettings.RightClickToLeaveChannelEnabled then
 		tab.NameTag.MouseButton2Click:connect(function()
 			self.LeaveConfirmationNotice.Text = string.format("Leave channel %s?", tab.ChannelName)
 			self.LeaveConfirmationFrame.LeaveTarget.Value = tab.ChannelName
-			self.LeaveConfirmationFrame:TweenPosition(UDim2.new(0, 0, 0, 0), Enum.EasingDirection.In, Enum.EasingStyle.Quad, 0.2, true)
+			self.LeaveConfirmationFrame:TweenPosition(
+				UDim2.new(0, 0, 0, 0),
+				Enum.EasingDirection.In,
+				Enum.EasingStyle.Quad,
+				0.2,
+				true
+			)
 		end)
 	end
 
@@ -225,7 +230,7 @@ function methods:AddChannelTab(channelName)
 end
 
 function methods:RemoveChannelTab(channelName)
-	if (not self:GetChannelTab(channelName)) then
+	if not self:GetChannelTab(channelName) then
 		error("Channel tab '" .. channelName .. "'does not exist!")
 	end
 
@@ -248,7 +253,7 @@ function methods:OrganizeChannelTabs()
 	table.insert(order, self:GetChannelTab("System"))
 
 	for tabIndexName, tab in pairs(self.ChannelTabs) do
-		if (tab.ChannelName ~= ChatSettings.GeneralChannelName and tab.ChannelName ~= "System") then
+		if tab.ChannelName ~= ChatSettings.GeneralChannelName and tab.ChannelName ~= "System" then
 			table.insert(order, tab)
 		end
 	end
@@ -258,7 +263,12 @@ function methods:OrganizeChannelTabs()
 	end
 
 	--// Dynamic tab resizing
-	self.GuiObjects.ScrollerSizer.Size = UDim2.new(1 / math.max(1, math.min(ChatSettings.ChannelsBarFullTabSize, self.NumTabs)), 0, 1, 0)
+	self.GuiObjects.ScrollerSizer.Size = UDim2.new(
+		1 / math.max(1, math.min(ChatSettings.ChannelsBarFullTabSize, self.NumTabs)),
+		0,
+		1,
+		0
+	)
 
 	self:ScrollChannelsFrame(0)
 end
@@ -270,15 +280,17 @@ function methods:ResizeChannelTabText(textSize)
 end
 
 function methods:ScrollChannelsFrame(dir)
-	if (self.ScrollChannelsFrameLock) then return end
+	if self.ScrollChannelsFrameLock then
+		return
+	end
 	self.ScrollChannelsFrameLock = true
 
 	local tabNumber = ChatSettings.ChannelsBarFullTabSize
 
 	local newPageNum = self.CurPageNum + dir
-	if (newPageNum < 0) then
+	if newPageNum < 0 then
 		newPageNum = 0
-	elseif (newPageNum > 0 and newPageNum + tabNumber > self.NumTabs) then
+	elseif newPageNum > 0 and newPageNum + tabNumber > self.NumTabs then
 		newPageNum = self.NumTabs - tabNumber
 	end
 
@@ -301,7 +313,14 @@ function methods:ScrollChannelsFrame(dir)
 
 	self:WaitUntilParentedCorrectly()
 
-	self.GuiObjects.ScrollerFrame:TweenPosition(endPos, Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, tweenTime, true, UnlockFunc)
+	self.GuiObjects.ScrollerFrame:TweenPosition(
+		endPos,
+		Enum.EasingDirection.InOut,
+		Enum.EasingStyle.Quad,
+		tweenTime,
+		true,
+		UnlockFunc
+	)
 end
 
 function methods:FadeOutBackground(duration)
@@ -353,10 +372,10 @@ function methods:Update(dtScale)
 	end
 
 	self.AnimParams.Background_CurrentTransparency = CurveUtil:Expt(
-			self.AnimParams.Background_CurrentTransparency,
-			self.AnimParams.Background_TargetTransparency,
-			self.AnimParams.Background_NormalizedExptValue,
-			dtScale
+		self.AnimParams.Background_CurrentTransparency,
+		self.AnimParams.Background_TargetTransparency,
+		self.AnimParams.Background_NormalizedExptValue,
+		dtScale
 	)
 
 	self:AnimGuiObjects()
@@ -364,7 +383,7 @@ end
 
 --// ToDo: Move to common modules
 function methods:WaitUntilParentedCorrectly()
-	while (not self.GuiObject:IsDescendantOf(game:GetService("Players").LocalPlayer)) do
+	while not self.GuiObject:IsDescendantOf(game:GetService("Players").LocalPlayer) do
 		self.GuiObject.AncestryChanged:wait()
 	end
 end
@@ -389,7 +408,7 @@ function module.new()
 	obj:InitializeAnimParams()
 
 	ChatSettings.SettingsChanged:connect(function(setting, value)
-		if (setting == "ChatChannelsTabTextSize") then
+		if setting == "ChatChannelsTabTextSize" then
 			obj:ResizeChannelTabText(value)
 		end
 	end)

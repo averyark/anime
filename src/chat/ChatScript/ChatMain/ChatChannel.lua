@@ -39,10 +39,10 @@ function methods:UpdateMessageFiltered(messageData)
 	local searchIndex = 1
 	local searchTable = self.MessageLog
 	local messageObj = nil
-	while (#searchTable >= searchIndex) do
+	while #searchTable >= searchIndex do
 		local obj = searchTable[searchIndex]
 
-		if (obj.ID == messageData.ID) then
+		if obj.ID == messageData.ID then
 			messageObj = obj
 			break
 		end

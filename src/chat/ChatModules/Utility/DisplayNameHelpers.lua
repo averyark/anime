@@ -11,7 +11,6 @@ local CommandErrorCodes = {
 
 --returns (string) UserName as the first value and an error code
 local function getUserNameFromChattedName(targetDisplayName, speakerUserName, speakerDisplayName)
-
 	--we're looking for non-speaker matches, so if the displayName matches the userName we need to short circuit
 	if speakerUserName == targetDisplayName then
 		return speakerUserName, CommandErrorCodes.ChattingToSelf
@@ -32,7 +31,10 @@ local function getUserNameFromChattedName(targetDisplayName, speakerUserName, sp
 
 	if ChatSettings.PlayerDisplayNamesEnabled then
 		for _, player in pairs(players) do
-			if player.Name ~= speakerUserName and string.lower(player.DisplayName) == string.lower(targetDisplayName) then
+			if
+				player.Name ~= speakerUserName
+				and string.lower(player.DisplayName) == string.lower(targetDisplayName)
+			then
 				numDisplayNameMatches = numDisplayNameMatches + 1
 				lastDisplayNameMatch = player.Name
 			end

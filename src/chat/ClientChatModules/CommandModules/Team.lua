@@ -4,7 +4,7 @@
 
 local PlayersService = game:GetService("Players")
 
-local TEAM_COMMANDS = {"/team ", "/t ", "% "}
+local TEAM_COMMANDS = { "/team ", "/t ", "% " }
 
 function IsTeamCommand(message)
 	for i = 1, #TEAM_COMMANDS do
@@ -62,7 +62,7 @@ end
 
 function teamStateMethods:GetMessage()
 	if self.TeamChatEntered then
-		return "/t " ..self.TextBox.Text
+		return "/t " .. self.TextBox.Text
 	end
 	return self.TextBox.Text
 end
@@ -126,5 +126,5 @@ end
 
 return {
 	[util.KEY_COMMAND_PROCESSOR_TYPE] = util.IN_PROGRESS_MESSAGE_PROCESSOR,
-	[util.KEY_PROCESSOR_FUNCTION] = ProcessMessage
+	[util.KEY_PROCESSOR_FUNCTION] = ProcessMessage,
 }

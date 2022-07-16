@@ -47,7 +47,7 @@ function instanceUtil.firstChildWithCondition(parent: Instance, callback: (Insta
 	t.strict(t.callback(callback))
 	for _, child in parent:GetChildren() do
 		if callback(child) then
-			return child;
+			return child
 		end
 	end
 end
@@ -60,7 +60,7 @@ function instanceUtil.firstDescendantWithCondition(ancestor: Instance, callback:
 	t.strict(t.callback(callback))
 	for _, descendant in ancestor:GetDescendants() do
 		if callback(descendant) then
-			return descendant;
+			return descendant
 		end
 	end
 end
@@ -259,7 +259,11 @@ end
 --[[
 	Passes all children that matches the className to the callback. This function also listens for instances newly parented to the object.
 ]]
-function instanceUtil.observeForChildrenThatIsA(parent : Instance, className : string, callback : (Instance) -> ()) : RBXScriptConnection
+function instanceUtil.observeForChildrenThatIsA(
+	parent: Instance,
+	className: string,
+	callback: (Instance) -> ()
+): RBXScriptConnection
 	t.strict(isInstance(parent))
 	t.strict(t.string(className))
 	t.strict(t.callback(callback))
@@ -274,13 +278,17 @@ function instanceUtil.observeForChildrenThatIsA(parent : Instance, className : s
 	local connection = parent.ChildAdded:Connect(function(child)
 		checkAndCall(child)
 	end)
-	return connection;
+	return connection
 end
 
 --[[
 	Passes all descendant that matches the className to the callback. This function also listens for instances newly placed under the ancestor.
 ]]
-function instanceUtil.observeForDescendantThatIsA(ancestor : Instance, className : string, callback : (Instance) -> ()) : RBXScriptConnection
+function instanceUtil.observeForDescendantThatIsA(
+	ancestor: Instance,
+	className: string,
+	callback: (Instance) -> ()
+): RBXScriptConnection
 	t.strict(isInstance(ancestor))
 	t.strict(t.string(className))
 	t.strict(t.callback(callback))
@@ -295,13 +303,17 @@ function instanceUtil.observeForDescendantThatIsA(ancestor : Instance, className
 	local connection = ancestor.DescendantAdded:Connect(function(descendant)
 		checkAndCall(descendant)
 	end)
-	return connection;
+	return connection
 end
 
 --[[
 	Passes all children that the second callback agrees to the first callback. This function also listens for instances newly parented to the object.
 ]]
-function instanceUtil.observeForChildrenWithCondition(parent : Instance, callback : (Instance) -> (), callback2 : (Instance) -> (boolean?)) : RBXScriptConnection
+function instanceUtil.observeForChildrenWithCondition(
+	parent: Instance,
+	callback: (Instance) -> (),
+	callback2: (Instance) -> (boolean?)
+): RBXScriptConnection
 	t.strict(isInstance(parent))
 	t.strict(t.callback(callback))
 	t.strict(t.callback(callback2))
@@ -316,13 +328,17 @@ function instanceUtil.observeForChildrenWithCondition(parent : Instance, callbac
 	for _, child in parent:GetChildren() do
 		checkAndCall(child)
 	end
-	return connection;
+	return connection
 end
 
 --[[
 	Passes all descendant that the second callback agrees to the first callback. This function also listens for instances newly placed under the ancestor.
 ]]
-function instanceUtil.observeForDescendantWithCondition(ancestor : Instance, callback : (Instance) -> (), callback2 : (Instance) -> (boolean?)) : RBXScriptConnection
+function instanceUtil.observeForDescendantWithCondition(
+	ancestor: Instance,
+	callback: (Instance) -> (),
+	callback2: (Instance) -> (boolean?)
+): RBXScriptConnection
 	t.strict(isInstance(ancestor))
 	t.strict(t.callback(callback))
 	t.strict(t.callback(callback2))
@@ -337,7 +353,7 @@ function instanceUtil.observeForDescendantWithCondition(ancestor : Instance, cal
 	for _, descendant in ancestor:GetChildren() do
 		checkAndCall(descendant)
 	end
-	return connection;
+	return connection
 end
 
 return instanceUtil
