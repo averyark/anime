@@ -5,20 +5,20 @@
     Created 	> 16/07/2022
 --]]
 
-local RunService = game:GetService('RunService')
-local Players = game:GetService('Players')
-local StarterPlayer = game:GetService('StarterPlayer')
-local ReplicatedFirst = game:GetService('ReplicatedFirst')
-local Lighting = game:GetService('Lighting')
-local CollectionService = game:GetService('CollectionService')
-local MarketplaceService = game:GetService('MarketplaceService')
-local ServerScriptService = game:GetService('ServerScriptService')
-local ServerStorage = game:GetService('ServerStorage')
-local MessagingService = game:GetService('MessagingService')
-local MemoryStoreService = game:GetService('MemoryStoreService')
-local BadgeService = game:GetService('BadgeService')
-local ReplicatedStorage = game:GetService('ReplicatedStorage')
-local LocalizationService = game:GetService('LocalizationService')
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local StarterPlayer = game:GetService("StarterPlayer")
+local ReplicatedFirst = game:GetService("ReplicatedFirst")
+local Lighting = game:GetService("Lighting")
+local CollectionService = game:GetService("CollectionService")
+local MarketplaceService = game:GetService("MarketplaceService")
+local ServerScriptService = game:GetService("ServerScriptService")
+local ServerStorage = game:GetService("ServerStorage")
+local MessagingService = game:GetService("MessagingService")
+local MemoryStoreService = game:GetService("MemoryStoreService")
+local BadgeService = game:GetService("BadgeService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalizationService = game:GetService("LocalizationService")
 
 local Knit = require(ReplicatedStorage.Packages.Knit)
 local Janitor = require(ReplicatedStorage.Packages.Janitor)
@@ -29,25 +29,23 @@ local TableUtil = require(ReplicatedStorage.Packages.TableUtil)
 local utilities = require(ReplicatedStorage.utilities)
 local matter = require(ReplicatedStorage.Packages.matter)
 
-local test = Knit.CreateService {
-    Name = "test";
-    Client = {};
-}
+local test = Knit.CreateService({
+	Name = "test",
+	Client = {},
+})
 
 function test:KnitStart()
+	utilities.player.observe(function(player)
+		player.changed:Connect(function(...)
+			print(...)
+		end)
+		player.server.changed:Connect(function(...)
+			print(...)
+		end)
+	end)
+	task.wait(5)
 
-    utilities.player.observe(function(player)
-        player.changed:Connect(function(...)
-            print(...)
-        end)
-        player.server.changed:Connect(function(...)
-            print(...)
-        end)
-    end)
-    task.wait(5)
-
-    utilities.player.all("test", "something")
-    
+	utilities.player.all("test", "something")
 end
 
-return test;
+return test

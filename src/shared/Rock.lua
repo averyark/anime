@@ -95,14 +95,10 @@ return {
 				coroutine.wrap(function()
 					task.wait(2)
 					TweenService
-						:Create(
-							Rock,
-							TweenInfo.new(math.random(1, 2), Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-							{
-								Position = Rock.Position + Vector3.new(0, -Scale, 0),
-								Orientation = Vector3.new(Rock.Orientation.X, Rock.Orientation.Y, -70),
-							}
-						)
+						:Create(Rock, TweenInfo.new(math.random(1, 2), Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+							Position = Rock.Position + Vector3.new(0, -Scale, 0),
+							Orientation = Vector3.new(Rock.Orientation.X, Rock.Orientation.Y, -70),
+						})
 						:Play()
 					Debris:AddItem(Rock, 4)
 				end)()

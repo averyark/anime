@@ -73,11 +73,11 @@ local player = function(v)
 	local at = {}
 	repeat
 		task.wait()
-	until v.self;
+	until v.self
 	for a, b in v.self do
 		at[a] = b
 	end
-	return at;
+	return at
 end
 
 type typesList = {
@@ -87,7 +87,7 @@ type typesList = {
 	number: typeof(require(script.number)),
 	ui: typeof(require(script.ui)),
 	remote: typeof(require(script.remote)),
-	player: typeof(require(script.player))
+	player: typeof(require(script.player)),
 }
 
 local __self = setmetatable({
