@@ -6,6 +6,8 @@
     Created     > 16/07/2022
 --]]
 
+-- died trying to silence Roblox Types
+
 local playerUtil = {}
 
 local RunService = game:GetService("RunService")
@@ -24,6 +26,7 @@ local registry = {
 	clients = {},
 	callbacks = {},
 	allCache = {},
+    allLocalCache = {}
 } -- cache
 local mt: mt = {}
 
@@ -48,20 +51,40 @@ function mt:editLocal(index, value)
 	self:__changed(index, value, valueCache)
 end
 
-function mt:edit(editServer, index, value)
-	if editServer then
-		if isClient then
-			remote.__playerUtil__modifyProperty:Fire(index, value) -- cross editing
-		elseif not isClient then
-			self._properties.server[index] = value
-		end
-	else
-		if not isClient then
-			remote.__playerUtil__modifyProperty:Fire(self.object, index, value)
-		elseif isClient then
-			self._properties.client[index] = value
-		end
-	end
+function mt:editCross(index, value)
+    if isClient then
+        remote.__playerUtil__modifyProperty:Fire(index, value) -- cross editing
+    elseif not isClient then
+        remote.__playerUtil__modifyProperty:Fire(self.object, index, value)
+    end
+end
+
+function mt:editServer(index, value)
+    if isClient then
+        self:editCross(index, value) -- client-server/server-client edit
+    else
+        self:editLocal(index, value) -- client-client/server-server edit
+    end
+end
+
+function mt:editClient(index, value)
+    if not isClient then
+        self:editCross(index, value) -- client-server/server-client edit
+    else
+        self:editLocal(index, value) -- client-client/server-server edit
+    end
+end
+
+function mt:edit(where : string, index : any, value : any)
+    if where == "server" then
+        self:editServer(index, value)
+    elseif where == "client" then
+        self:editClient(index, value)
+    elseif where == "local" then
+        self:editLocal(index, value)
+    elseif where == "cross" then
+        self:editCross(index, value)
+    end
 end
 
 function mt:__onCrossEdited(index, value)
@@ -96,7 +119,7 @@ function mt:getCross(index): any?
 	end
 end
 
-local initPlayer = function(player: Player, serverPacket: { [any]: any }?)
+local initPlayer = function(player: Player, model: { [any]: any }?)
 	assert(t.instanceIsA("Player")(player), "player expected")
 	local self
 	self = setmetatable({
@@ -112,7 +135,7 @@ local initPlayer = function(player: Player, serverPacket: { [any]: any }?)
 		object = player,
         server = setmetatable({}, {
 			__newindex = function(_self, index, value)
-				self:edit(true, index, value)
+                self:editClient(index, value)
 			end,
 			__index = function(_self, index)
 				if index == "changed" then
@@ -123,7 +146,7 @@ local initPlayer = function(player: Player, serverPacket: { [any]: any }?)
 		}),
         client = setmetatable({}, {
 			__newindex = function(_, index, value)
-				self:edit(false, index, value)
+				self:editServer(index, value)
 			end,
 			__index = function(_self, index)
 				if index == "changed" then
@@ -163,8 +186,8 @@ local initPlayer = function(player: Player, serverPacket: { [any]: any }?)
 	if not isClient then
 		registry.clients[player] = self
 	else
-		if serverPacket then
-			self._properties.client = serverPacket
+		if model then
+			self._properties.client = model
 		end
 
 		registry.client = self
@@ -176,14 +199,14 @@ local initPlayer = function(player: Player, serverPacket: { [any]: any }?)
 			f(self)
 		end)
 	end
-
+    
 	return self :: typeof(self) & {
 		client: typeof(self.client) & { changed: typeof(Signal.new()) },
 		server: typeof(self.server) & { changed: typeof(Signal.new()) },
 	} & mt
 end
 
-type mt = typeof(mt) & typeof(initPlayer(Instance.new("Player")))
+type mt = typeof(initPlayer(Instance.new("Player"))) & typeof(mt)
 
 playerUtil.observe = function(callback)
 	table.insert(registry.callbacks, callback)
@@ -196,32 +219,84 @@ playerUtil.me = function(): mt
 	return registry.client :: mt
 end
 
-playerUtil.all = function(index, value) --: {[any]: any}--typeof(playerUtil.all())
-	for _, self in pairs(registry.clients) do
-		self.client[index] = value
-	end
-	registry.allCache[index] = value
+local __mt = {
+    __index = function(_self, _index) : any
+        if _index == "editLocal" then
+            return function (_, index, value : any)
+                for _, self in pairs(_self.target) do
+                    Promise.try(function()
+                        self:editLocal(index, value)
+                    end)
+                end
+                return _self;
+            end
+        elseif _index == "edit" then
+            return function (_, index, value : any)
+                for _, self in pairs(_self.target) do
+                    Promise.try(function()
+                        self:editClient(index, value)
+                    end)
+                end
+                return _self;
+            end
+        end
+        return;
+    end,
+}
+type __mt = {
+    editLocal: ({}, any, any) -> __mt,
+    edit: ({}, any, any) -> __mt
+}
+
+local exceptArray = function(t1, t2)
+    local t3 = {}
+    for i, j in t1 do
+        if not table.find(t2, j) then
+            table.insert(t3, j)
+        end
+    end
+    return t3;
 end
 
-playerUtil.single = function(player: Player): mt
+local except = function(t1, t2)
+    local t3 = {}
+    for i, j in t1 do
+        if not t2[i] then
+            t3[i] = j
+        end
+    end
+    return t3;
+end
+
+local convert = function(plrs)
+    local tb = {}
+    for _, player in plrs do
+        if registry.clients[player] then
+            table.insert(tb, registry.clients[player])
+        end
+    end
+    return tb;
+end
+
+playerUtil.all = function() : __mt
+    assert(not isClient, "all is not accessible on the client")
+    return setmetatable({target = registry.clients}, __mt);
+end
+
+playerUtil.single = function(player: Player) : mt
+    assert(not isClient, "all is not accessible on the client")
 	assert(t.instanceIsA("Player")(player), "Player expected")
 	return registry.clients[player :: Player] :: mt
 end
 
-playerUtil.some = function(players: { Player? }, index, value)
-	for _, self in pairs(registry.clients) do
-		if table.find(players, self.object) then
-			self.client[index] = value
-		end
-	end
+playerUtil.some = function(players: { Player? }) : __mt
+	assert(not isClient, "all is not accessible on the client")
+    return setmetatable({target = convert(players)}, __mt);
 end
 
-playerUtil.except = function(players: { Player? }, index, value)
-	for _, self in pairs(registry.clients) do
-		if not table.find(players, self.object) then
-			self.client[index] = value
-		end
-	end
+playerUtil.except = function(players: { Player? }) : __mt
+	assert(not isClient, "all is not accessible on the client")
+    return setmetatable({target = except(registry.clients, convert(players))}, __mt);
 end
 
 local init = function()
@@ -230,7 +305,7 @@ local init = function()
 		for _, player in Players:GetPlayers() do
 			Promise.try(function()
 				if not registry.clients[player] then
-					initPlayer(player)
+					initPlayer(player, registry.allLocalCache)
 				end
 			end)
 		end
