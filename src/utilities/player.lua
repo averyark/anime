@@ -80,7 +80,7 @@ function mt:__onCrossEdited(index, value)
 	self:__changed(index, value, valueCache)
 end
 
-function mt:getLocal(index): any?
+function mt:getLocal(index : any): any?
 	if isClient then
 		return self._properties.client[index]
 	else
@@ -110,25 +110,7 @@ local initPlayer = function(player: Player, serverPacket: { [any]: any }?)
 		maid = Janitor.new(),
 		changed = Signal.new(),
 		object = player,
-	}, {
-		__newindex = function(_, index, value)
-			self:editLocal(index, value)
-		end,
-		__index = function(_, index)
-			local response = mt.getLocal(self, index)
-			if response ~= nil then
-				return response
-			end
-			return mt[index]
-		end,
-	})
-
-	--rawset(self, "player", player)
-
-	rawset(
-		self,
-		"server",
-		setmetatable({}, {
+        server = setmetatable({}, {
 			__newindex = function(_self, index, value)
 				self:edit(true, index, value)
 			end,
@@ -138,12 +120,8 @@ local initPlayer = function(player: Player, serverPacket: { [any]: any }?)
 				end
 				return self._properties.server[index]
 			end,
-		})
-	)
-	rawset(
-		self,
-		"client",
-		setmetatable({}, {
+		}),
+        client = setmetatable({}, {
 			__newindex = function(_, index, value)
 				self:edit(false, index, value)
 			end,
@@ -154,7 +132,18 @@ local initPlayer = function(player: Player, serverPacket: { [any]: any }?)
 				return self._properties.client[index]
 			end,
 		})
-	)
+	}, {
+		__newindex = function(_, index, value)
+			self:editLocal(index, value)
+		end,
+		__index = function(_, index)
+			local response = mt.getLocal(self :: typeof(self), index)
+			if response ~= nil then
+				return response
+			end
+			return mt[index]
+		end,
+	})
 
 	for _, sig in pairs(self) do
 		if Signal.Is(sig) then
