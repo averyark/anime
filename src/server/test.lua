@@ -42,15 +42,11 @@ function test:KnitStart()
 		player.server.changed:Connect(function(...)
 			print(...)
 		end)
-        
 	end)
 	task.wait(5)
-    for _, player in Players:GetPlayers() do
-        utilities.player.some({player})
-        :edit("test", 100)
-        :edit("some", 50)
-    end
-
+	for _, player in Players:GetPlayers() do
+		utilities.player.some({ player }):edit("test", 100):edit("some", 50)
+	end
 end
 
 return test

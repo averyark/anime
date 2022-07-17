@@ -26,7 +26,7 @@ local registry = {
 	clients = {},
 	callbacks = {},
 	allCache = {},
-    allLocalCache = {}
+	allLocalCache = {},
 } -- cache
 local mt: mt = {}
 
@@ -52,39 +52,39 @@ function mt:editLocal(index, value)
 end
 
 function mt:editCross(index, value)
-    if isClient then
-        remote.__playerUtil__modifyProperty:Fire(index, value) -- cross editing
-    elseif not isClient then
-        remote.__playerUtil__modifyProperty:Fire(self.object, index, value)
-    end
+	if isClient then
+		remote.__playerUtil__modifyProperty:Fire(index, value) -- cross editing
+	elseif not isClient then
+		remote.__playerUtil__modifyProperty:Fire(self.object, index, value)
+	end
 end
 
 function mt:editServer(index, value)
-    if isClient then
-        self:editCross(index, value) -- client-server/server-client edit
-    else
-        self:editLocal(index, value) -- client-client/server-server edit
-    end
+	if isClient then
+		self:editCross(index, value) -- client-server/server-client edit
+	else
+		self:editLocal(index, value) -- client-client/server-server edit
+	end
 end
 
 function mt:editClient(index, value)
-    if not isClient then
-        self:editCross(index, value) -- client-server/server-client edit
-    else
-        self:editLocal(index, value) -- client-client/server-server edit
-    end
+	if not isClient then
+		self:editCross(index, value) -- client-server/server-client edit
+	else
+		self:editLocal(index, value) -- client-client/server-server edit
+	end
 end
 
-function mt:edit(where : string, index : any, value : any)
-    if where == "server" then
-        self:editServer(index, value)
-    elseif where == "client" then
-        self:editClient(index, value)
-    elseif where == "local" then
-        self:editLocal(index, value)
-    elseif where == "cross" then
-        self:editCross(index, value)
-    end
+function mt:edit(where: string, index: any, value: any)
+	if where == "server" then
+		self:editServer(index, value)
+	elseif where == "client" then
+		self:editClient(index, value)
+	elseif where == "local" then
+		self:editLocal(index, value)
+	elseif where == "cross" then
+		self:editCross(index, value)
+	end
 end
 
 function mt:__onCrossEdited(index, value)
@@ -103,7 +103,7 @@ function mt:__onCrossEdited(index, value)
 	self:__changed(index, value, valueCache)
 end
 
-function mt:getLocal(index : any): any?
+function mt:getLocal(index: any): any?
 	if isClient then
 		return self._properties.client[index]
 	else
@@ -133,9 +133,9 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 		maid = Janitor.new(),
 		changed = Signal.new(),
 		object = player,
-        server = setmetatable({}, {
+		server = setmetatable({}, {
 			__newindex = function(_self, index, value)
-                self:editClient(index, value)
+				self:editClient(index, value)
 			end,
 			__index = function(_self, index)
 				if index == "changed" then
@@ -144,7 +144,7 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 				return self._properties.server[index]
 			end,
 		}),
-        client = setmetatable({}, {
+		client = setmetatable({}, {
 			__newindex = function(_, index, value)
 				self:editServer(index, value)
 			end,
@@ -154,7 +154,7 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 				end
 				return self._properties.client[index]
 			end,
-		})
+		}),
 	}, {
 		__newindex = function(_, index, value)
 			self:editLocal(index, value)
@@ -199,7 +199,7 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 			f(self)
 		end)
 	end
-    
+
 	return self :: typeof(self) & {
 		client: typeof(self.client) & { changed: typeof(Signal.new()) },
 		server: typeof(self.server) & { changed: typeof(Signal.new()) },
@@ -220,83 +220,83 @@ playerUtil.me = function(): mt
 end
 
 local __mt = {
-    __index = function(_self, _index) : any
-        if _index == "editLocal" then
-            return function (_, index, value : any)
-                for _, self in pairs(_self.target) do
-                    Promise.try(function()
-                        self:editLocal(index, value)
-                    end)
-                end
-                return _self;
-            end
-        elseif _index == "edit" then
-            return function (_, index, value : any)
-                for _, self in pairs(_self.target) do
-                    Promise.try(function()
-                        self:editClient(index, value)
-                    end)
-                end
-                return _self;
-            end
-        end
-        return;
-    end,
+	__index = function(_self, _index): any
+		if _index == "editLocal" then
+			return function(_, index, value: any)
+				for _, self in pairs(_self.target) do
+					Promise.try(function()
+						self:editLocal(index, value)
+					end)
+				end
+				return _self
+			end
+		elseif _index == "edit" then
+			return function(_, index, value: any)
+				for _, self in pairs(_self.target) do
+					Promise.try(function()
+						self:editClient(index, value)
+					end)
+				end
+				return _self
+			end
+		end
+		return
+	end,
 }
 type __mt = {
-    editLocal: ({}, any, any) -> __mt,
-    edit: ({}, any, any) -> __mt
+	editLocal: ({}, any, any) -> __mt,
+	edit: ({}, any, any) -> __mt,
 }
 
 local exceptArray = function(t1, t2)
-    local t3 = {}
-    for i, j in t1 do
-        if not table.find(t2, j) then
-            table.insert(t3, j)
-        end
-    end
-    return t3;
+	local t3 = {}
+	for i, j in t1 do
+		if not table.find(t2, j) then
+			table.insert(t3, j)
+		end
+	end
+	return t3
 end
 
 local except = function(t1, t2)
-    local t3 = {}
-    for i, j in t1 do
-        if not t2[i] then
-            t3[i] = j
-        end
-    end
-    return t3;
+	local t3 = {}
+	for i, j in t1 do
+		if not t2[i] then
+			t3[i] = j
+		end
+	end
+	return t3
 end
 
 local convert = function(plrs)
-    local tb = {}
-    for _, player in plrs do
-        if registry.clients[player] then
-            table.insert(tb, registry.clients[player])
-        end
-    end
-    return tb;
+	local tb = {}
+	for _, player in plrs do
+		if registry.clients[player] then
+			table.insert(tb, registry.clients[player])
+		end
+	end
+	return tb
 end
 
-playerUtil.all = function() : __mt
-    assert(not isClient, "all is not accessible on the client")
-    return setmetatable({target = registry.clients}, __mt);
+playerUtil.all = function(): __mt
+	assert(not isClient, "all is not accessible on the client")
+	return setmetatable({ target = registry.clients }, __mt)
 end
 
-playerUtil.single = function(player: Player) : mt
-    assert(not isClient, "all is not accessible on the client")
+playerUtil.single = function(player: Player): mt
+	assert(not isClient, "all is not accessible on the client")
 	assert(t.instanceIsA("Player")(player), "Player expected")
 	return registry.clients[player :: Player] :: mt
 end
 
-playerUtil.some = function(players: { Player? }) : __mt
+playerUtil.some = function(players: { Player? }): __mt
 	assert(not isClient, "all is not accessible on the client")
-    return setmetatable({target = convert(players)}, __mt);
+	return setmetatable({ target = convert(players) }, __mt)
 end
 
-playerUtil.except = function(players: { Player? }) : __mt
+playerUtil.except = function(players: { Player? }): __mt
 	assert(not isClient, "all is not accessible on the client")
-    return setmetatable({target = except(registry.clients, convert(players))}, __mt);
+	return setmetatable({ target = except(registry.clients, convert(players)) }, __mt)
 end
 
 local init = function()
