@@ -37,16 +37,35 @@ local test = Knit.CreateService({
 function test:KnitStart()
 	utilities.player.observe(function(player)
 		player.changed:Connect(function(...)
-			print(...)
+			--print(...)
 		end)
 		player.server.changed:Connect(function(...)
-			print(...)
+			--print(...)
 		end)
 	end)
+	--[[utilities.data.observe(function(playerObject, playerData)
+		warn(playerObject, playerData)
+		playerData:set(function(store)
+			store.Money += 50
+			store.Test = true
+			store.TestTable = {
+				Test = 1,
+				Test2 = 2
+			}
+		end)
+	end)]]
+	utilities.data.observe(function(playerObject, playerData)
+        print(playerObject, playerObject.data == playerData)
+    end)
 	task.wait(5)
 	for _, player in Players:GetPlayers() do
 		utilities.player.some({ player }):edit("test", 100):edit("some", 50)
+		utilities.data.capture(player, function(storage)
+			storage.Money += 50
+			print(storage.Money)
+		end)
 	end
+	
 end
 
 return test

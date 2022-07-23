@@ -88,6 +88,7 @@ function mt:edit(where: string, index: any, value: any)
 end
 
 function mt:__onCrossEdited(index, value)
+	print(index, value)
 	local valueCache
 	if isClient then
 		local rawValueCache = self._properties.client[index]
@@ -119,6 +120,7 @@ function mt:getCross(index): any?
 	end
 end
 
+-- change request: Server-Server and Client-Client should be isolated
 local initPlayer = function(player: Player, model: { [any]: any }?)
 	assert(t.instanceIsA("Player")(player), "player expected")
 	local self
@@ -191,14 +193,23 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 		end
 
 		registry.client = self
-		print(registry.client)
+		--print(registry.client)
 	end
 
-	for _, f in pairs(registry.callbacks) do
+	table.sort(registry.callbacks, function(a : {callback: (mt) -> (), priority: number}, b : {callback: (mt) -> (), priority: number})
+		if a.priority < b.priority then
+			return true;
+		end
+		return false;
+	end)
+
+	for _, dat in pairs(registry.callbacks) do
 		Promise.try(function()
-			f(self)
+			dat.callback(self)
 		end)
 	end
+
+	print(registry.callbacks)
 
 	return self :: typeof(self) & {
 		client: typeof(self.client) & { changed: typeof(Signal.new()) },
@@ -206,10 +217,24 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 	} & mt
 end
 
-type mt = typeof(initPlayer(Instance.new("Player"))) & typeof(mt)
+export type mt = typeof(initPlayer(Instance.new("Player"))) & typeof(mt)
 
-playerUtil.observe = function(callback)
-	table.insert(registry.callbacks, callback)
+playerUtil.observe = function(callback : (mt) -> (), priority : number?)
+	--table.insert(registry.callbacks, callback)
+	if not priority then
+		table.insert(registry.callbacks, {
+			callback = callback,
+			priority = #registry.callbacks
+		})
+	else
+		table.insert(registry.callbacks, {
+			callback = callback,
+			priority = priority
+		})
+	end
+	for _, client in registry.clients do -- priority is ignored
+		callback(client)
+	end
 end
 
 playerUtil.me = function(): mt

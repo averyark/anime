@@ -88,6 +88,7 @@ type typesList = {
 	ui: typeof(require(script.ui)),
 	remote: typeof(require(script.remote)),
 	player: typeof(require(script.player)),
+	data: typeof(require(script.data))
 }
 
 local __self = setmetatable({
@@ -104,6 +105,7 @@ local __self = setmetatable({
 		remote = require(script.remote),
 		ui = require(script.ui),
 		player = require(script.player), -- CLIENT UTIL YIELDS
+		data = require(script.data),
 		_getRaw = function(mt)
 			return mt
 		end,

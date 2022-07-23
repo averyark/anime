@@ -19,6 +19,11 @@ Loader.LoadDescendants(script.Parent:FindFirstChild("client"))
 print("done")
 
 Cmdr:SetActivationKeys({ Enum.KeyCode.F2 })
+
+task.spawn(function()
+	utilities.data.start()
+end)
+
 Knit
 	:Start()
 	:andThen(function()

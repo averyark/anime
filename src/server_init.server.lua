@@ -11,6 +11,10 @@ local TableUtil = require(ReplicatedStorage.Packages.TableUtil)
 local t = require(ReplicatedStorage.Packages.t)
 local TestEZ = require(ReplicatedStorage.Packages.TestEZ)
 
+utilties.data.start({
+	Money = 0
+}, "Testing")
+
 Loader.LoadDescendants(script.Parent:FindFirstChild("server"))
 
 Cmdr:RegisterDefaultCommands()

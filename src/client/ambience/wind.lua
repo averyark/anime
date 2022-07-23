@@ -40,7 +40,7 @@ local wind = Knit.CreateController({
 
 function wind:KnitStart()
 	utilities.player.me().changed:Connect(function(key, name, old)
-		print(key, name, old)
+		--print(key, name, old)
 	end)
 	utilities.player.me().server.test = true
 	utilities.player.me().server.test = false
@@ -50,6 +50,9 @@ function wind:KnitStart()
 		WindPower = 0.4,
 	})
 	WindShake:Init()
+	utilities.data.listen({"Money"}, function(changes)
+		print(changes.new, changes.old)
+	end, true)
 end
 
 return wind
