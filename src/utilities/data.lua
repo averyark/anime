@@ -21,187 +21,176 @@ local remote = require(script.Parent.remote)
 local isClient = RunService:IsClient()
 
 local dataUtil = {
-    profileStore = nil :: profileStore,
-    name = "testing",
-    list = {},
-    callbacks = {},
-    onChangeCallbacks = {},
+	profileStore = nil :: profileStore,
+	name = "testing",
+	list = {},
+	callbacks = {},
+	onChangeCallbacks = {},
 }
 
 local data = {}
 
 local valueFromPath = function(_tb, _path)
-    local ref = _tb
-    for _, v in _path do
-        ref = ref[v]
-    end
-    return ref;
+	local ref = _tb
+	for _, v in _path do
+		ref = ref[v]
+	end
+	return ref
 end
 
 local decipher = function(_tb, _path)
-    local last = #_path
-    local lastTb, lastKey = _tb, _path[last]
-    for i, v in _path do
-        if i ~= last then
-            lastTb = lastTb[v]
-        end
-    end
-    return lastTb, lastKey;
+	local last = #_path
+	local lastTb, lastKey = _tb, _path[last]
+	for i, v in _path do
+		if i ~= last then
+			lastTb = lastTb[v]
+		end
+	end
+	return lastTb, lastKey
 end
 
+local compare
+compare = function(tb, otherTb, path, changes) -- failed
+	path = path or {}
+	changes = changes or {}
 
-local compare; compare = function(tb, otherTb, path, changes) -- failed
+	for k, value in tb do
+		local otherValue = otherTb[k] -- after
 
-    path = path or {}
-    changes = changes or {}
+		if typeof(value) == "table" and typeof(otherValue) == "table" then
+			local newPath = TableUtil.DeepCopyTable(path)
+			table.insert(newPath, k)
+			compare(value, otherValue, newPath, changes)
+			continue
+		end
 
-    for k, value in tb do
-        local otherValue = otherTb[k] -- after
-        
-        if typeof(value) == "table" and typeof(otherValue) == "table" then
-            local newPath = TableUtil.DeepCopyTable(path)
-            table.insert(newPath, k)
-            compare(value, otherValue, newPath, changes)
-            continue
-        end
+		if value ~= otherValue then
+			local newPath = TableUtil.DeepCopyTable(path)
+			table.insert(newPath, k)
+			table.insert(changes, {
+				path = newPath,
+				value = { old = otherValue, new = value },
+			})
+			continue
+		end
+	end
 
-        if value ~= otherValue then
-           
-            local newPath = TableUtil.DeepCopyTable(path)
-            table.insert(newPath, k)
-            table.insert(changes, {
-                path = newPath,
-                value = {old = otherValue, new = value}
-            })
-            continue
-        end
-    end
-
-    return changes;
+	return changes
 end
 
 local matchPath = function(tb, otherTb)
-    local match = 0
-    for i, j in tb do
-        if otherTb[i] == j then
-            match = i
-        else
-            break
-        end
-    end
-    return match;
+	local match = 0
+	for i, j in tb do
+		if otherTb[i] == j then
+			match = i
+		else
+			break
+		end
+	end
+	return match
 end
 
 local fireListeners = function(new, old, changes, player)
-    for _, change in changes do
-        local max = #change.path
-        for _, onChangeMeta in pairs(dataUtil.onChangeCallbacks) do
-            local nm = matchPath(change.path, onChangeMeta.path)
-            if nm == 0 then continue; end
-            if nm == max then
-                if player then
-                    if onChangeMeta.player and not player == onChangeMeta.player then
-                        continue;
-                    end
-                    Promise.try(onChangeMeta.callback,
-                        player,
-                        {
-                            new = change.value.new,
-                            old = change.value.old,
-                        }
-                    )
-                else
-                    Promise.try(onChangeMeta.callback,
-                        {
-                            new = change.value.new,
-                            old = change.value.old,
-                        }
-                    )
-                end
-            else
-                if onChangeMeta.shouldListenToDescendantChange then
-                    if player then
-                        if onChangeMeta.player and not player == onChangeMeta.player then
-                            continue;
-                        end
-                        Promise.try(onChangeMeta.callback,
-                            player,
-                            {
-                                new = valueFromPath(new, onChangeMeta.path),
-                                old = valueFromPath(old, onChangeMeta.path)
-                            }
-                        )
-                    else
-                        Promise.try(onChangeMeta.callback,
-                            {
-                                new = valueFromPath(new, onChangeMeta.path),
-                                old = valueFromPath(old, onChangeMeta.path)
-                            }
-                        )
-                    end
-                    
-                end
-            end
-        end
-    end
+	for _, change in changes do
+		local max = #change.path
+		for _, onChangeMeta in pairs(dataUtil.onChangeCallbacks) do
+			local nm = matchPath(change.path, onChangeMeta.path)
+			if nm == 0 then
+				continue
+			end
+			if nm == max then
+				if player then
+					if onChangeMeta.player and not player == onChangeMeta.player then
+						continue
+					end
+					Promise.try(onChangeMeta.callback, player, {
+						new = change.value.new,
+						old = change.value.old,
+					})
+				else
+					Promise.try(onChangeMeta.callback, {
+						new = change.value.new,
+						old = change.value.old,
+					})
+				end
+			else
+				if onChangeMeta.shouldListenToDescendantChange then
+					if player then
+						if onChangeMeta.player and not player == onChangeMeta.player then
+							continue
+						end
+						Promise.try(onChangeMeta.callback, player, {
+							new = valueFromPath(new, onChangeMeta.path),
+							old = valueFromPath(old, onChangeMeta.path),
+						})
+					else
+						Promise.try(onChangeMeta.callback, {
+							new = valueFromPath(new, onChangeMeta.path),
+							old = valueFromPath(old, onChangeMeta.path),
+						})
+					end
+				end
+			end
+		end
+	end
 end
 
-function data:capture(callback : (storage: {}) -> ())
-    assert(not isClient, "You cannot use this method on the client")
-    if not callback then
-        return;
-    end
-    local snapchot = TableUtil.DeepCopyTable(self.storage)
-    callback(self.storage) -- wait for callback
-    local changes = compare(self.storage, snapchot)
-    fireListeners(self.storage, snapchot, changes, self.player)
-    remote.__dataUtil_applyDataChange:Fire(self.player, changes)
+function data:capture(callback: (storage: {}) -> ())
+	assert(not isClient, "You cannot use this method on the client")
+	if not callback then
+		return
+	end
+	local snapchot = TableUtil.DeepCopyTable(self.storage)
+	callback(self.storage) -- wait for callback
+	local changes = compare(self.storage, snapchot)
+	fireListeners(self.storage, snapchot, changes, self.player)
+	remote.__dataUtil_applyDataChange:Fire(self.player, changes)
 end
 
-function data:listen(path : {string}, callback : () -> (), shouldListenToDescendantChange)
-    table.insert(dataUtil.onChangeCallbacks, {
-        player = self.player,
-        callback = callback,
-        path = path,
-        shouldListenToDescendantChange = shouldListenToDescendantChange or true,
-    })
+function data:listen(path: { string }, callback: () -> (), shouldListenToDescendantChange)
+	table.insert(dataUtil.onChangeCallbacks, {
+		player = self.player,
+		callback = callback,
+		path = path,
+		shouldListenToDescendantChange = shouldListenToDescendantChange or true,
+	})
 end
 
 data.__index = data
 
 function data.new(player)
-    assert(not isClient, "You cannot use this method on the client")
-    local self = setmetatable({
-        profile = dataUtil.profileStore:LoadProfileAsync("player_" .. player.UserId),
-        changed = Signal.new(),
-        maid = Janitor.new(),
-        player = player,
-    }, data)
+	assert(not isClient, "You cannot use this method on the client")
+	local self = setmetatable({
+		profile = dataUtil.profileStore:LoadProfileAsync("player_" .. player.UserId),
+		changed = Signal.new(),
+		maid = Janitor.new(),
+		player = player,
+	}, data)
 
-    self.storage = self.profile.Data
+	self.storage = self.profile.Data
 
-    self.maid:Add(self.player.AncestryChanged:Connect(function()
-        if not player:IsDescendantOf(Players) then
-            self.maid:Destroy()
-            self.profile:Release()
-            dataUtil.list[player] = nil
-        end
-    end))
+	self.maid:Add(self.player.AncestryChanged:Connect(function()
+		if not player:IsDescendantOf(Players) then
+			self.maid:Destroy()
+			self.profile:Release()
+			dataUtil.list[player] = nil
+		end
+	end))
 
-    dataUtil.list[player] = self
-    playerUtil.single(player).data = self
+	dataUtil.list[player] = self
+	playerUtil.single(player).data = self
 
-    for _, f in pairs(dataUtil.callbacks) do
-        Promise.try(f, playerUtil.single(player), self)
-    end
+	for _, f in pairs(dataUtil.callbacks) do
+		Promise.try(f, playerUtil.single(player), self)
+	end
 
-    for _, sig in pairs(self) do
+	for _, sig in pairs(self) do
 		if Signal.Is(sig) then
 			self.maid:Add(sig)
 		end
 	end
 
-    return self;
+	return self
 end
 
 --[[
@@ -214,17 +203,17 @@ end
     end)
     ```
 ]]
-function dataUtil.capture(player : Player, callback : (storage: {}) -> ())
-    assert(not isClient, "You cannot use this method on the client")
-    if not callback then
-        return;
-    end
-    local storage = dataUtil.get(player).storage
-    local snapchot = TableUtil.DeepCopyTable(storage)
-    callback(storage) -- wait for callback
-    local changes = compare(storage, snapchot)
-    fireListeners(storage, snapchot, changes)
-    remote.__dataUtil_applyDataChange:Fire(player, changes)
+function dataUtil.capture(player: Player, callback: (storage: {}) -> ())
+	assert(not isClient, "You cannot use this method on the client")
+	if not callback then
+		return
+	end
+	local storage = dataUtil.get(player).storage
+	local snapchot = TableUtil.DeepCopyTable(storage)
+	callback(storage) -- wait for callback
+	local changes = compare(storage, snapchot)
+	fireListeners(storage, snapchot, changes)
+	remote.__dataUtil_applyDataChange:Fire(player, changes)
 end
 
 --[[
@@ -235,8 +224,8 @@ end
     data.update(player)
     ```
 ]]
-function dataUtil.update(player : Player)
-    remote.__dataUtil_updateClientData:Fire(player, dataUtil.get(player).storage)
+function dataUtil.update(player: Player)
+	remote.__dataUtil_updateClientData:Fire(player, dataUtil.get(player).storage)
 end
 
 --[[
@@ -245,9 +234,9 @@ end
     dataUtil.get(player)
     ```
 ]]
-function dataUtil.get(player : Player) : typeof(data.new())
-    assert(not isClient, "You cannot use this method on the client")
-    return dataUtil.list[player];
+function dataUtil.get(player: Player): typeof(data.new())
+	assert(not isClient, "You cannot use this method on the client")
+	return dataUtil.list[player]
 end
 
 --[[
@@ -258,26 +247,26 @@ end
     end)
     ```
 ]]
-function dataUtil.promise(player : Player) : typeof(Promise.new())
-    assert(not isClient, "You cannot use this method on the client")
-    return Promise.new(function(resolve, reject, onCancel)
-        local cancelled = false
-        onCancel(function()
-            cancelled = true
-        end)
-        
-        repeat
-            task.wait()
-        until dataUtil.list[player] or cancelled;
+function dataUtil.promise(player: Player): typeof(Promise.new())
+	assert(not isClient, "You cannot use this method on the client")
+	return Promise.new(function(resolve, reject, onCancel)
+		local cancelled = false
+		onCancel(function()
+			cancelled = true
+		end)
 
-        if not dataUtil.list[player] then
-            return reject();
-        end
-        
-        return resolve(dataUtil.list[player]);
-    end):timeout(20):catch(function(err)
-        warn(tostring(err))
-    end);
+		repeat
+			task.wait()
+		until dataUtil.list[player] or cancelled
+
+		if not dataUtil.list[player] then
+			return reject()
+		end
+
+		return resolve(dataUtil.list[player])
+	end):timeout(20):catch(function(err)
+		warn(tostring(err))
+	end)
 end
 
 --[[
@@ -288,12 +277,12 @@ end
     end)
     ```
 ]]
-function dataUtil.observe(callback : (playerObject : playerUtil.mt, playerData : typeof(data.new())) -> ())
-    assert(not isClient, "You cannot use this method on the client")
-    table.insert(dataUtil.callbacks, callback)
-    for player, self in dataUtil.list do
-        callback(playerUtil.single(player), self)
-    end
+function dataUtil.observe(callback: (playerObject: playerUtil.mt, playerData: typeof(data.new())) -> ())
+	assert(not isClient, "You cannot use this method on the client")
+	table.insert(dataUtil.callbacks, callback)
+	for player, self in dataUtil.list do
+		callback(playerUtil.single(player), self)
+	end
 end
 
 --[[
@@ -303,11 +292,11 @@ end
     ```
 ]]
 function dataUtil.yield()
-    assert(isClient, "You cannot use this method on the server")
-    repeat
-        task.wait()
-    until dataUtil.storage;
-    return dataUtil.storage;
+	assert(isClient, "You cannot use this method on the server")
+	repeat
+		task.wait()
+	until dataUtil.storage
+	return dataUtil.storage
 end
 
 --[[
@@ -333,53 +322,53 @@ end
     ```
 ]]
 function dataUtil.listen(
-        path : {string},
-        callback : (changes: {new: any, old: any}) -> (),
-        initial : (true | (data: any) -> ())?,
-        shouldListenToDescendantChange : boolean?
-    )
-    table.insert(dataUtil.onChangeCallbacks, {
-        callback = callback,
-        path = path,
-        shouldListenToDescendantChange = shouldListenToDescendantChange or true,
-    })
-    if typeof(initial) == "boolean" then
-        callback({new = valueFromPath(dataUtil.yield(), path)})
-    elseif typeof(initial) == "function" then
-        initial(valueFromPath(dataUtil.yield(), path))
-    end
+	path: { string },
+	callback: (changes: { new: any, old: any }) -> (),
+	initial: (true | (data: any) -> ())?,
+	shouldListenToDescendantChange: boolean?
+)
+	table.insert(dataUtil.onChangeCallbacks, {
+		callback = callback,
+		path = path,
+		shouldListenToDescendantChange = shouldListenToDescendantChange or true,
+	})
+	if typeof(initial) == "boolean" then
+		callback({ new = valueFromPath(dataUtil.yield(), path) })
+	elseif typeof(initial) == "function" then
+		initial(valueFromPath(dataUtil.yield(), path))
+	end
 end
 
-function dataUtil.start(template : {[any]: any}?, name : string?)
-    if not isClient then
-        local ProfileService = require(ReplicatedStorage.Packages.ProfileService)
-        dataUtil.profileStore = ProfileService.GetProfileStore(name or dataUtil.name, template)
-    
-        playerUtil.observe(function(self)
-            self.data = data.new(self.object)
-        end, -1)
-        remote.new("__dataUtil__retrieveData", "get"):Connect(function(player)
-            return select(2, dataUtil.promise(player):await()).storage
-        end)
-        remote.new("__dataUtil_updateClientData")
-        remote.new("__dataUtil_applyDataChange")
-    else
-        remote.__dataUtil_updateClientData:Connect(function(_data)
-            dataUtil.storage = _data
-        end)
-        remote.__dataUtil_applyDataChange:Connect(function(changes)
-            local snapchot = TableUtil.DeepCopyTable(dataUtil.storage)
-            for _, change in changes do -- apply changes
-                local last, key = decipher(dataUtil.storage, change.path)
-                last[key] = change.value.new
-            end
-            fireListeners(dataUtil.storage, snapchot, changes)
-        end)
-        dataUtil.storage = remote.get("__dataUtil__retrieveData"):Retrieve()
-        playerUtil.me().data = dataUtil.storage
-    end
+function dataUtil.start(template: { [any]: any }?, name: string?)
+	if not isClient then
+		local ProfileService = require(ReplicatedStorage.Packages.ProfileService)
+		dataUtil.profileStore = ProfileService.GetProfileStore(name or dataUtil.name, template)
+
+		playerUtil.observe(function(self)
+			self.data = data.new(self.object)
+		end, -1)
+		remote.new("__dataUtil__retrieveData", "get"):Connect(function(player)
+			return select(2, dataUtil.promise(player):await()).storage
+		end)
+		remote.new("__dataUtil_updateClientData")
+		remote.new("__dataUtil_applyDataChange")
+	else
+		remote.__dataUtil_updateClientData:Connect(function(_data)
+			dataUtil.storage = _data
+		end)
+		remote.__dataUtil_applyDataChange:Connect(function(changes)
+			local snapchot = TableUtil.DeepCopyTable(dataUtil.storage)
+			for _, change in changes do -- apply changes
+				local last, key = decipher(dataUtil.storage, change.path)
+				last[key] = change.value.new
+			end
+			fireListeners(dataUtil.storage, snapchot, changes)
+		end)
+		dataUtil.storage = remote.get("__dataUtil__retrieveData"):Retrieve()
+		playerUtil.me().data = dataUtil.storage
+	end
 end
 
 type profileStore = typeof(require(ReplicatedStorage.Packages.ProfileService).GetProfileStore("", {}))
 
-return dataUtil;
+return dataUtil

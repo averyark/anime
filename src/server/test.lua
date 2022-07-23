@@ -55,8 +55,8 @@ function test:KnitStart()
 		end)
 	end)]]
 	utilities.data.observe(function(playerObject, playerData)
-        print(playerObject, playerObject.data == playerData)
-    end)
+		print(playerObject, playerObject.data == playerData)
+	end)
 	task.wait(5)
 	for _, player in Players:GetPlayers() do
 		utilities.player.some({ player }):edit("test", 100):edit("some", 50)
@@ -65,7 +65,6 @@ function test:KnitStart()
 			print(storage.Money)
 		end)
 	end
-	
 end
 
 return test

@@ -88,7 +88,7 @@ type typesList = {
 	ui: typeof(require(script.ui)),
 	remote: typeof(require(script.remote)),
 	player: typeof(require(script.player)),
-	data: typeof(require(script.data))
+	data: typeof(require(script.data)),
 }
 
 local __self = setmetatable({

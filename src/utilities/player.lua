@@ -196,12 +196,15 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 		--print(registry.client)
 	end
 
-	table.sort(registry.callbacks, function(a : {callback: (mt) -> (), priority: number}, b : {callback: (mt) -> (), priority: number})
-		if a.priority < b.priority then
-			return true;
+	table.sort(
+		registry.callbacks,
+		function(a: { callback: (mt) -> (), priority: number }, b: { callback: (mt) -> (), priority: number })
+			if a.priority < b.priority then
+				return true
+			end
+			return false
 		end
-		return false;
-	end)
+	)
 
 	for _, dat in pairs(registry.callbacks) do
 		Promise.try(function()
@@ -219,17 +222,17 @@ end
 
 export type mt = typeof(initPlayer(Instance.new("Player"))) & typeof(mt)
 
-playerUtil.observe = function(callback : (mt) -> (), priority : number?)
+playerUtil.observe = function(callback: (mt) -> (), priority: number?)
 	--table.insert(registry.callbacks, callback)
 	if not priority then
 		table.insert(registry.callbacks, {
 			callback = callback,
-			priority = #registry.callbacks
+			priority = #registry.callbacks,
 		})
 	else
 		table.insert(registry.callbacks, {
 			callback = callback,
-			priority = priority
+			priority = priority,
 		})
 	end
 	for _, client in registry.clients do -- priority is ignored
