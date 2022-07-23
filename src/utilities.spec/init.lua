@@ -10,8 +10,6 @@ return function()
 		context._maid = Janitor.new()
 	end)
 
-	describe("Testing compatibality of um object with built in utilities modules", function() end)
-
 	afterAll(function(context)
 		context._maid:Destroy()
 	end)
