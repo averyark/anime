@@ -88,7 +88,6 @@ function mt:edit(where: string, index: any, value: any)
 end
 
 function mt:__onCrossEdited(index, value)
-	print(index, value)
 	local valueCache
 	if isClient then
 		local rawValueCache = self._properties.client[index]
@@ -252,20 +251,37 @@ local __mt = {
 		if _index == "editLocal" then
 			return function(_, index, value: any)
 				for _, self in pairs(_self.target) do
-					Promise.try(function()
+					if not _self.promises then
+						_self.promises = {}
+					end
+					table.insert(_self.promises, Promise.try(function()
 						self:editLocal(index, value)
-					end)
+					end))
 				end
 				return _self
 			end
 		elseif _index == "edit" then
 			return function(_, index, value: any)
+				if not _self.promises then
+					_self.promises = {}
+				end
 				for _, self in pairs(_self.target) do
-					Promise.try(function()
+					table.insert(_self.promises, Promise.try(function()
 						self:editClient(index, value)
-					end)
+					end))
 				end
 				return _self
+			end
+		elseif _index == "iterate" then
+			return function (_, func)
+				if not _self.promises then
+					_self.promises = {}
+				end
+				for _, self in pairs(_self.target) do
+					table.insert(_self.promises, Promise.try(function()
+						func(self)
+					end))
+				end
 			end
 		end
 		return
@@ -274,6 +290,7 @@ local __mt = {
 type __mt = {
 	editLocal: ({}, any, any) -> __mt,
 	edit: ({}, any, any) -> __mt,
+	iterate: ({}, (playerObject: mt) -> ()) -> __mt,
 }
 
 local exceptArray = function(t1, t2)

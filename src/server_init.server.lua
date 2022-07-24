@@ -13,6 +13,12 @@ local TestEZ = require(ReplicatedStorage.Packages.TestEZ)
 
 utilties.data.start({
 	Money = 0,
+	Settings = {
+		[1] = true,
+		[2] = true,
+		[3] = false,
+		[4] = false
+	}
 }, "Testing")
 
 Loader.LoadDescendants(script.Parent:FindFirstChild("server"))
