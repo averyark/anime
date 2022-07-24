@@ -35,9 +35,7 @@ local test = Knit.CreateService({
 })
 
 function test:KnitStart()
-	utilities.player.observe(function(player)
-		
-	end)
+	utilities.player.observe(function(player) end)
 	--[[utilities.data.observe(function(playerObject, playerData)
 		warn(playerObject, playerData)
 		playerData:set(function(store)

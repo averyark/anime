@@ -167,7 +167,7 @@ function data.new(player)
 		player = player,
 	}, data)
 
-    self.profile:Reconcile()
+	self.profile:Reconcile()
 	self.storage = self.profile.Data
 
 	self.maid:Add(self.player.AncestryChanged:Connect(function()
@@ -331,7 +331,8 @@ function dataUtil.listen(
 	table.insert(dataUtil.onChangeCallbacks, {
 		callback = callback,
 		path = path,
-		shouldListenToDescendantChange = shouldListenToDescendantChange == nil and true or shouldListenToDescendantChange,
+		shouldListenToDescendantChange = shouldListenToDescendantChange == nil and true
+			or shouldListenToDescendantChange,
 	})
 	if typeof(initial) == "boolean" then
 		callback({ new = valueFromPath(dataUtil.yield(), path) })

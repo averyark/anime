@@ -254,9 +254,12 @@ local __mt = {
 					if not _self.promises then
 						_self.promises = {}
 					end
-					table.insert(_self.promises, Promise.try(function()
-						self:editLocal(index, value)
-					end))
+					table.insert(
+						_self.promises,
+						Promise.try(function()
+							self:editLocal(index, value)
+						end)
+					)
 				end
 				return _self
 			end
@@ -266,21 +269,27 @@ local __mt = {
 					_self.promises = {}
 				end
 				for _, self in pairs(_self.target) do
-					table.insert(_self.promises, Promise.try(function()
-						self:editClient(index, value)
-					end))
+					table.insert(
+						_self.promises,
+						Promise.try(function()
+							self:editClient(index, value)
+						end)
+					)
 				end
 				return _self
 			end
 		elseif _index == "iterate" then
-			return function (_, func)
+			return function(_, func)
 				if not _self.promises then
 					_self.promises = {}
 				end
 				for _, self in pairs(_self.target) do
-					table.insert(_self.promises, Promise.try(function()
-						func(self)
-					end))
+					table.insert(
+						_self.promises,
+						Promise.try(function()
+							func(self)
+						end)
+					)
 				end
 			end
 		end
