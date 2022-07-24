@@ -219,7 +219,6 @@ end
 
 --[[
     Sends the entire player data over to the client instead of just the changes. This method is much more costly on the network while also disallow change tracking.
-    Although it is recommended to use `dataUtil.update` for high frequency updates.
     ```lua
     data.get(player).storage.Money = 100
     data.update(player)
@@ -359,12 +358,14 @@ function dataUtil.start(template: { [any]: any }?, name: string?)
 			dataUtil.storage = _data
 		end)
 		remote.__dataUtil_applyDataChange:Connect(function(changes)
+            debug.profilebegin("__dataUtil__dataApplicance")
 			local snapchot = TableUtil.DeepCopyTable(dataUtil.storage)
 			for _, change in changes do -- apply changes
 				local last, key = decipher(dataUtil.storage, change.path)
 				last[key] = change.value.new
 			end
 			fireListeners(dataUtil.storage, snapchot, changes)
+            debug.profileend()
 		end)
 		dataUtil.storage = remote.get("__dataUtil__retrieveData"):Retrieve()
 		playerUtil.me().data = dataUtil.storage

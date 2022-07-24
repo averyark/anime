@@ -45,9 +45,9 @@ function wind:KnitStart()
 		WindPower = 0.4,
 	})
 	WindShake:Init()
-	utilities.data.listen({ "Settings" }, function(changes)
-		print(changes.new)
-	end, nil, false)
+	utilities.data.listen({ "Money" }, function(changes)
+		--print(changes.new)
+	end)
 end
 
 return wind
