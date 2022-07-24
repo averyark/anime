@@ -64,6 +64,13 @@ function test:KnitStart()
 			print(storage.Money)
 		end)]]
 	end
+	--[[RunService.Heartbeat:Connect(function(deltaTime)
+		utilities.player.all():iterate(function(playerObject)
+			utilities.data.capture(playerObject.object, function(storage)
+				storage.Money += 1
+			end)
+		end)
+	end)]]
 end
 
 return test
