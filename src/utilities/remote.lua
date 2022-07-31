@@ -212,7 +212,11 @@ remoteUtil.new =
 		--return print(("[remote][%s] Created remote: %s"):format(isClient and "client" or "server", remoteName));
 	end
 
-remoteUtil.get = function(remoteName): remote
+remoteUtil.get = function(remoteName : string, noyield : boolean?): remote
+	if not noyield then
+		repeat task.wait()
+		until remotes[remoteName]
+	end
 	return remotes[remoteName]
 end
 
@@ -233,7 +237,7 @@ return setmetatable({}, {
 		if remoteUtil[index] then
 			return remoteUtil[index]
 		else
-			return remoteUtil.get(index)
+			return remoteUtil.get(index, true)
 		end
 	end,
 }) :: {

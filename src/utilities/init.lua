@@ -6,8 +6,6 @@
     Created     > 19/05/2022
 --]]
 
--- Ignore the Um object, and don't use it for production pls ~ark
-
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -47,6 +45,10 @@ local isSpecialFile = function(module: ModuleScript)
 	return isTypeFile(module) or isSpecFile(module)
 end
 
+local utilityCache = Instance.new("Folder")
+utilityCache.Parent = workspace
+utilityCache.Name = "__utilityCache"
+
 local run = function()
 	for _, module in script:GetChildren() do
 		if isModule(module) and not isSpecialFile(module) then
@@ -69,17 +71,6 @@ end
 
 run()
 
-local player = function(v)
-	local at = {}
-	repeat
-		task.wait()
-	until v.self
-	for a, b in v.self do
-		at[a] = b
-	end
-	return at
-end
-
 type typesList = {
 	instance: typeof(require(script.instance)),
 	tween: typeof(require(script.tween)),
@@ -89,6 +80,9 @@ type typesList = {
 	remote: typeof(require(script.remote)),
 	player: typeof(require(script.player)),
 	data: typeof(require(script.data)),
+	localization: typeof(require(script.localization)),
+	sound: typeof(require(script.sound)),
+	--debounce: typeof(require(script.debounce)),
 }
 
 local __self = setmetatable({
@@ -106,6 +100,9 @@ local __self = setmetatable({
 		ui = require(script.ui),
 		player = require(script.player), -- CLIENT UTIL YIELDS
 		data = require(script.data),
+		localization = require(script.localization),
+		sound = require(script.sound),
+		--debounce = require(script.debounce),
 		_getRaw = function(mt)
 			return mt
 		end,

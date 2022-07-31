@@ -53,9 +53,9 @@ end
 
 function mt:editCross(index, value)
 	if isClient then
-		remote.__playerUtil__modifyProperty:Fire(index, value) -- cross editing
+		remote.get("__playerUtil__modifyProperty"):Fire(index, value) -- cross editing
 	elseif not isClient then
-		remote.__playerUtil__modifyProperty:Fire(self.object, index, value)
+		remote.get("__playerUtil__modifyProperty"):Fire(self.object, index, value)
 	end
 end
 

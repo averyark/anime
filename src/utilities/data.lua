@@ -144,7 +144,7 @@ function data:capture(callback: (storage: {}) -> ())
 	callback(self.storage) -- wait for callback
 	local changes = compare(self.storage, snapchot)
 	fireListeners(self.storage, snapchot, changes, self.player)
-	remote.__dataUtil_applyDataChange:Fire(self.player, changes)
+	remote.get("__dataUtil_applyDataChange"):Fire(self.player, changes)
 end
 
 function data:listen(path: { string }, callback: () -> (), shouldListenToDescendantChange)
@@ -214,7 +214,7 @@ function dataUtil.capture(player: Player, callback: (storage: {}) -> ())
 	callback(storage) -- wait for callback
 	local changes = compare(storage, snapchot)
 	fireListeners(storage, snapchot, changes)
-	remote.__dataUtil_applyDataChange:Fire(player, changes)
+	remote.get("__dataUtil_applyDataChange"):Fire(player, changes)
 end
 
 --[[
@@ -225,7 +225,7 @@ end
     ```
 ]]
 function dataUtil.update(player: Player)
-	remote.__dataUtil_updateClientData:Fire(player, dataUtil.get(player).storage)
+	remote.get("__dataUtil_updateClientData"):Fire(player, dataUtil.get(player).storage)
 end
 
 --[[
@@ -354,10 +354,10 @@ function dataUtil.start(template: { [any]: any }?, name: string?)
 		remote.new("__dataUtil_updateClientData")
 		remote.new("__dataUtil_applyDataChange")
 	else
-		remote.__dataUtil_updateClientData:Connect(function(_data)
+		remote.get("__dataUtil_updateClientData"):Connect(function(_data)
 			dataUtil.storage = _data
 		end)
-		remote.__dataUtil_applyDataChange:Connect(function(changes)
+		remote.get("__dataUtil_applyDataChange"):Connect(function(changes)
             debug.profilebegin("__dataUtil__dataApplicance")
 			local snapchot = TableUtil.DeepCopyTable(dataUtil.storage)
 			for _, change in changes do -- apply changes

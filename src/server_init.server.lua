@@ -21,6 +21,8 @@ utilties.data.start({
 	},
 }, "Testing")
 
+utilties.sound.makeGroup("testing")
+
 Loader.LoadDescendants(script.Parent:FindFirstChild("server"))
 
 Cmdr:RegisterDefaultCommands()
