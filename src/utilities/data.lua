@@ -374,6 +374,6 @@ function dataUtil.start(template: { [any]: any }?, name: string?)
 end
 
 export type data = typeof(data.new())
-type profileStore = typeof(require(ReplicatedStorage.Packages.ProfileService).GetProfileStore("", {}))
+--type profileStore = typeof(require(ReplicatedStorage.Packages.ProfileService).GetProfileStore("", {}))
 
 return dataUtil

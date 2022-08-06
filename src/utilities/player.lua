@@ -20,7 +20,7 @@ local remote = require(script.Parent.remote)
 local Signal = require(ReplicatedStorage.Packages.Signal)
 local TableUtil = require(ReplicatedStorage.Packages.TableUtil)
 local deb = require(script.Parent.debounce)
-local ProfileService = require(ReplicatedStorage.Packages.ProfileService)
+
 local isClient = RunService:IsClient()
 
 local registry = {
@@ -402,7 +402,7 @@ export type mt = typeof(initPlayer(Instance.new("Player"))) & {
 	debounce: deb.debounceGroup,
 	data: ({
 		storage: {},
-		profile: typeof(ProfileService.GetProfileStore():LoadProfileAsync()),
+		profile: typeof(require(ReplicatedStorage.Packages.ProfileService).GetProfileStore():LoadProfileAsync()),
 		capture: () -> (),
 		listen: () -> (),
 		changed: signal,
