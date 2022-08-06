@@ -11,17 +11,7 @@ local TableUtil = require(ReplicatedStorage.Packages.TableUtil)
 local t = require(ReplicatedStorage.Packages.t)
 local TestEZ = require(ReplicatedStorage.Packages.TestEZ)
 
-utilties.data.start({
-	Money = 0,
-	Settings = {
-		[1] = true,
-		[2] = true,
-		[3] = false,
-		[4] = false,
-	},
-}, "Testing")
-
-utilties.sound.makeGroup("testing")
+utilties.data.start({}, "Testing")
 
 Loader.LoadDescendants(script.Parent:FindFirstChild("server"))
 

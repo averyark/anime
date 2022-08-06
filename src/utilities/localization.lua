@@ -69,4 +69,4 @@ function localizationUtil.translateByKey(key, arguments)
 	end
 end
 
-return localizationUtil;
+return localizationUtil

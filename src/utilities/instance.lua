@@ -42,7 +42,7 @@ end
 --[[
 	Childrens are passed to the callback function, the first instance which returns true by the callback function is returned
 ]]
-function instanceUtil.firstChildWithCondition(parent: Instance, callback: (Instance) -> (boolean?)) : Instance?
+function instanceUtil.firstChildWithCondition(parent: Instance, callback: (Instance) -> (boolean?)): Instance?
 	t.strict(isInstance(parent))
 	t.strict(t.callback(callback))
 	for _, child in parent:GetChildren() do
@@ -56,7 +56,7 @@ end
 --[[
 	Descendants are passed to the callback function, the first instance which returns true by the callback function is returned
 ]]
-function instanceUtil.firstDescendantWithCondition(ancestor: Instance, callback: (Instance) -> (boolean?)) : Instance?
+function instanceUtil.firstDescendantWithCondition(ancestor: Instance, callback: (Instance) -> (boolean?)): Instance?
 	t.strict(isInstance(ancestor))
 	t.strict(t.callback(callback))
 	for _, descendant in ancestor:GetDescendants() do

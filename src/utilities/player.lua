@@ -28,13 +28,13 @@ local registry = {
 	callbacks = {},
 	allCache = {},
 	allLocalCache = {},
-	client = {}
+	client = {},
 } :: {
-	clients : {[Player]: mt},
+	clients: { [Player]: mt },
 	client: mt,
-	allLocalCache : {any},
-	callbacks: {{ callback: (mt) -> (), priority: number }},
-	allCache: {any},
+	allLocalCache: { any },
+	callbacks: { { callback: (mt) -> (), priority: number } },
+	allCache: { any },
 }
 local mt: mt = {}
 
@@ -175,7 +175,7 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 			end
 			return mt[index]
 		end,
-	}) 
+	})
 
 	for _, sig in pairs(self) do
 		if Signal.Is(sig) then
@@ -344,7 +344,7 @@ end
 
 playerUtil.some = function(players: { Player? })
 	assert(not isClient, "all is not accessible on the client")
-	return setmetatable({ target = convert(players) :: mt }, __mt) ::  __mt
+	return setmetatable({ target = convert(players) :: mt }, __mt) :: __mt
 end
 
 playerUtil.except = function(players: { Player? })
@@ -391,7 +391,7 @@ local init = function()
 	end
 end
 
-type __mt = {target: {mt}} & (typeof(setmetatable({}, __mt))) & ({
+type __mt = { target: { mt } } & (typeof(setmetatable({}, __mt))) & ({
 	editLocal: ({}, any, any) -> __mt,
 	edit: ({}, any, any) -> __mt,
 	iterate: ({}, (playerObject: mt) -> ()) -> __mt,
@@ -407,15 +407,15 @@ export type mt = typeof(initPlayer(Instance.new("Player"))) & {
 		listen: () -> (),
 		changed: signal,
 		maid: janitor,
-		player: Player
+		player: Player,
 	}),
 	localChanged: signal,
 	changed: signal,
 	maid: janitor,
 	object: Player,
-	server: {changed: signal},
-	client: {changed: signal},
-	_properties: {client: {[any]: any}, server: {[any]: any}}
+	server: { changed: signal },
+	client: { changed: signal },
+	_properties: { client: { [any]: any }, server: { [any]: any } },
 }
 --[[({
 	editLocal: ({}, any, any) -> __mt,

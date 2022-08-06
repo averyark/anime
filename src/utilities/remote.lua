@@ -212,9 +212,10 @@ remoteUtil.new =
 		--return print(("[remote][%s] Created remote: %s"):format(isClient and "client" or "server", remoteName));
 	end
 
-remoteUtil.get = function(remoteName : string, noyield : boolean?): remote
+remoteUtil.get = function(remoteName: string, noyield: boolean?): remote
 	if not noyield then
-		repeat task.wait()
+		repeat
+			task.wait()
 		until remotes[remoteName]
 	end
 	return remotes[remoteName]

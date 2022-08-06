@@ -16,8 +16,6 @@ local TestEZ = require(ReplicatedStorage.Packages.TestEZ)
 
 Loader.LoadDescendants(script.Parent:FindFirstChild("client"))
 
-print("done")
-
 Cmdr:SetActivationKeys({ Enum.KeyCode.F2 })
 
 task.spawn(function()

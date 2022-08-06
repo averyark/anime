@@ -20,7 +20,8 @@ local remote = require(script.Parent.remote)
 
 local isClient = RunService:IsClient()
 
-local dataUtil; dataUtil = {
+local dataUtil
+dataUtil = {
 	profileStore = nil,
 	name = "testing",
 	list = {},
@@ -165,7 +166,7 @@ function data.new(player)
 		changed = Signal.new(),
 		maid = Janitor.new(),
 		player = player,
-		storage = {}
+		storage = {},
 	}, data)
 
 	self.storage = self.profile.Data
@@ -359,14 +360,14 @@ function dataUtil.start(template: { [any]: any }?, name: string?)
 			dataUtil.storage = _data
 		end)
 		remote.get("__dataUtil_applyDataChange"):Connect(function(changes)
-            debug.profilebegin("__dataUtil__dataApplicance")
+			debug.profilebegin("__dataUtil__dataApplicance")
 			local snapchot = TableUtil.DeepCopyTable(dataUtil.storage)
 			for _, change in changes do -- apply changes
 				local last, key = decipher(dataUtil.storage, change.path)
 				last[key] = change.value.new
 			end
 			fireListeners(dataUtil.storage, snapchot, changes)
-            debug.profileend()
+			debug.profileend()
 		end)
 		dataUtil.storage = remote.get("__dataUtil__retrieveData"):Retrieve()
 		playerUtil.me().data = dataUtil.storage

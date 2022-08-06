@@ -22,49 +22,52 @@ local debounceGroup = {}
 type debounceTypes = "time" | "boolean" | "function"
 
 debounceUtil.state = {
-    ["Active"] = 1,
-    ["Inactive"] = 2,
-    ["Suspended"] = 3
+	["Active"] = 1,
+	["Inactive"] = 2,
+	["Suspended"] = 3,
 }
 debounceUtil.type = {
-    ["Timer"] = 1,
-    ["Boolean"] = 2,
+	["Timer"] = 1,
+	["Boolean"] = 2,
 }
 debounceUtil.groups = {}
 debounceUtil.indexed = {}
 
-debounce.new = function(identifier : string, _type : types, ...)
-    local self; self = setmetatable({
-        Name = identifier,
-        _type = _type,
-        _loaded = false,
-        _group = "none"
-    }, {
-        __index = function(_, index)
-            if index == "State" then
-                if _type == debounceUtil.type.Timer then
-                    if t.number(self._tL) and t.number(self._int) then
-                        return if os.clock() - self._tL < self._int then debounceUtil.state.Inactive else debounceUtil.state.Active
-                    end
-                elseif _type == debounceUtil.type.Boolean then
-                    if t.boolean(self._bool) then
-                        return if self._bool then debounceUtil.state.Inactive else debounceUtil.state.Active
-                    end
-                end
-                return debounceUtil.state.Suspended;
-            end
-            return debounce[index];
-        end
-    })
+debounce.new = function(identifier: string, _type: types, ...)
+	local self
+	self = setmetatable({
+		Name = identifier,
+		_type = _type,
+		_loaded = false,
+		_group = "none",
+	}, {
+		__index = function(_, index)
+			if index == "State" then
+				if _type == debounceUtil.type.Timer then
+					if t.number(self._tL) and t.number(self._int) then
+						return if os.clock() - self._tL < self._int
+							then debounceUtil.state.Inactive
+							else debounceUtil.state.Active
+					end
+				elseif _type == debounceUtil.type.Boolean then
+					if t.boolean(self._bool) then
+						return if self._bool then debounceUtil.state.Inactive else debounceUtil.state.Active
+					end
+				end
+				return debounceUtil.state.Suspended
+			end
+			return debounce[index]
+		end,
+	})
 
-    if _type == debounceUtil.type.Timer then
-        self._int = select(1, ...)
-        self._tL = os.clock()
-    elseif _type == debounceUtil.type.Boolean then
-        self._bool = false
-    end
+	if _type == debounceUtil.type.Timer then
+		self._int = select(1, ...)
+		self._tL = os.clock()
+	elseif _type == debounceUtil.type.Boolean then
+		self._bool = false
+	end
 
-    return self :: debounce;
+	return self :: debounce
 end
 
 --[[
@@ -83,12 +86,12 @@ end
     ```
 --]]
 function debounce:set(...)
-    if self._type == debounceUtil.type.Timer then
-        self._tL = ...
-    elseif self._type == debounceUtil.type.Boolean then
-        self._bool = ...
-    end
-    return self :: debounce;
+	if self._type == debounceUtil.type.Timer then
+		self._tL = ...
+	elseif self._type == debounceUtil.type.Boolean then
+		self._bool = ...
+	end
+	return self :: debounce
 end
 
 --[[
@@ -102,12 +105,12 @@ end
     ```
 --]]
 function debounce:lock()
-    if self._type == debounceUtil.type.Timer then
-        self._tL = os.clock()
-    elseif self._type == debounceUtil.type.Boolean then
-        self._bool = not self._bool
-    end
-    return self :: debounce;
+	if self._type == debounceUtil.type.Timer then
+		self._tL = os.clock()
+	elseif self._type == debounceUtil.type.Boolean then
+		self._bool = not self._bool
+	end
+	return self :: debounce
 end
 
 --[[
@@ -120,10 +123,10 @@ end
     ```
 --]]
 function debounce:isLocked()
-    if self.State == debounceUtil.state.Active then
-        return false;
-    end
-    return true;
+	if self.State == debounceUtil.state.Active then
+		return false
+	end
+	return true
 end
 
 --[[
@@ -135,9 +138,9 @@ end
     group:Destroy()
     ```
 --]]
-function debounce:group(group : string)
-    self._group = group
-    return self :: debounce;
+function debounce:group(group: string)
+	self._group = group
+	return self :: debounce
 end
 
 --[[
@@ -148,8 +151,8 @@ end
     ```
 --]]
 function debounce:index()
-    debounceUtil.indexed[self.Name] = self
-    return self :: debounce;
+	debounceUtil.indexed[self.Name] = self
+	return self :: debounce
 end
 
 --[[
@@ -160,16 +163,16 @@ end
     ```
 --]]
 function debounce:Destroy()
-    debounceUtil.indexed[self.Name] = nil
+	debounceUtil.indexed[self.Name] = nil
 end
 
-debounceGroup.new = function(group : any, contents : {debounce?})
-    local self = setmetatable({
-        Identifier = group,
-        Contents = t.table(contents) and contents or {};
-    }, debounceGroup)
+debounceGroup.new = function(group: any, contents: { debounce? })
+	local self = setmetatable({
+		Identifier = group,
+		Contents = t.table(contents) and contents or {},
+	}, debounceGroup)
 
-    return self :: debounceGroup;
+	return self :: debounceGroup
 end
 
 --[[
@@ -181,17 +184,20 @@ end
     debounceGroup:add("somethingElse")
     ```
 --]]
-function debounceGroup:add(_d : string | debounce)
-    if t.string(_d) then
-        assert(debounceUtil.indexed[_d], ("[debounce] none of the indexed debounce matches \"%s\""):format(_d :: string))
-        self.Contents[_d] = debounceUtil.indexed[_d]
-        debounceUtil.indexed[_d]._group = self.Identifier
-        return _d;
-    end
-    local db = self.Contents[(_d :: debounce).Name]
-    db._group = self.Identifier
-    self.Contents[db.Name] = db
-    return self :: debounceGroup;
+function debounceGroup:add(_d: string | debounce)
+	if t.string(_d) then
+		assert(
+			debounceUtil.indexed[_d],
+			("[debounce] none of the indexed debounce matches \"%s\""):format(_d :: string)
+		)
+		self.Contents[_d] = debounceUtil.indexed[_d]
+		debounceUtil.indexed[_d]._group = self.Identifier
+		return _d
+	end
+	local db = self.Contents[(_d :: debounce).Name]
+	db._group = self.Identifier
+	self.Contents[db.Name] = db
+	return self :: debounceGroup
 end
 
 --[[
@@ -202,9 +208,9 @@ end
     debounceGroup:remove("something")
     ```
 --]]
-function debounceGroup:remove(_d : string | number)
-    self.Contents[_d] = nil
-    return self :: debounceGroup;
+function debounceGroup:remove(_d: string | number)
+	self.Contents[_d] = nil
+	return self :: debounceGroup
 end
 
 --[[
@@ -217,8 +223,8 @@ end
     debounceGroup:remove("something")
     ```
 --]]
-function debounceGroup:make(identifier : string, _type : types, ...)
-    return debounce.new(identifier, _type, ...):group(self.Identifier);
+function debounceGroup:make(identifier: string, _type: types, ...)
+	return debounce.new(identifier, _type, ...):group(self.Identifier)
 end
 
 --[[
@@ -231,37 +237,36 @@ end
     ```
 --]]
 function debounceGroup:Destroy()
-    for _, debounceObject in self.Contents do
-        debounceObject:Destroy()
-    end
-    debounceUtil.groups[self.Identifier] = nil
+	for _, debounceObject in self.Contents do
+		debounceObject:Destroy()
+	end
+	debounceUtil.groups[self.Identifier] = nil
 end
 
 debounceGroup.__index = debounceGroup
 
-export type types = {
-    "Timer" | "Boolean"
-}
-export type states = {
-    "Active" | "Inactive" | "Suspended"
-}
-export type debounce = {Name: string, State: states} & ({
-    set: (debounce, ...any) -> (debounce),
-    lock: (debounce) -> (debounce),
-    isLocked: (debounce) -> (boolean),
-    group: (debounce, string) -> (debounce),
-    index: (debounce) -> (debounce),
-    Destroy: (debounce) -> (),
+export type types = { "Timer" | "Boolean" }
+export type states = { "Active" | "Inactive" | "Suspended" }
+export type debounce = { Name: string, State: states } & ({
+	set: (debounce, ...any) -> (debounce),
+	lock: (debounce) -> (debounce),
+	isLocked: (debounce) -> (boolean),
+	group: (debounce, string) -> (debounce),
+	index: (debounce) -> (debounce),
+	Destroy: (debounce) -> (),
 })
-export type debounceGroupFunction = (group: any, contents: {debounce?}) -> ({Identifier: any, Contents: {debounce}} & typeof(debounceGroup))
-export type debounceGroup = {Identifier: any, Contents: {debounce}} & ({
-    add: (debounceGroup, _d : string | debounce) -> (debounceGroup),
-    remove: (debounceGroup, _d : string | number) -> (debounceGroup),
-    make: (debounceGroup, identifier: string, _type: types) -> (debounce),
-    Destroy: (debounceGroup) -> (),
+export type debounceGroupFunction = (
+	group: any,
+	contents: { debounce? }
+) -> ({ Identifier: any, Contents: { debounce } } & typeof(debounceGroup))
+export type debounceGroup = { Identifier: any, Contents: { debounce } } & ({
+	add: (debounceGroup, _d: string | debounce) -> (debounceGroup),
+	remove: (debounceGroup, _d: string | number) -> (debounceGroup),
+	make: (debounceGroup, identifier: string, _type: types) -> (debounce),
+	Destroy: (debounceGroup) -> (),
 })
 
 debounceUtil.newGroup = debounceGroup.new
 debounceUtil.new = debounce.new
 
-return debounceUtil;
+return debounceUtil
