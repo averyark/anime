@@ -10,7 +10,6 @@ local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
 
 local instance = require(script.Parent.instance)
-local EnumList = require(ReplicatedStorage.Packages.EnumList)
 local t = require(ReplicatedStorage.Packages.t)
 local Janitor = require(ReplicatedStorage.Packages.Janitor)
 local Promise = require(ReplicatedStorage.Packages.Promise)
