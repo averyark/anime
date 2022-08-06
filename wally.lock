@@ -10,7 +10,7 @@ dependencies = []
 [[package]]
 name = "devarke/animewall"
 version = "0.1.0"
-dependencies = [["BoatTween", "penguindevs/boattween@1.0.1"], ["EnumList", "sleitnick/enum-list@2.0.1"], ["Janitor", "howmanysmall/janitor@1.14.1"], ["Knit", "sleitnick/knit@1.4.7"], ["Loader", "sleitnick/loader@1.0.2"], ["ProfileService", "brittonfischer/profileservice@2.1.5"], ["Promise", "evaera/promise@4.0.0"], ["Remote", "sleitnick/remote@1.0.4"], ["Signal", "sleitnick/signal@1.2.0"], ["TableUtil", "finobinos/tableutil@3.2.1"], ["TestEZ", "roblox/testez@0.4.1"], ["TopbarPlus", "developercron/icon@0.1.0"], ["matter", "evaera/matter@0.5.1"], ["t", "osyrisrblx/t@3.0.0"]]
+dependencies = [["BoatTween", "penguindevs/boattween@1.0.1"], ["Janitor", "howmanysmall/janitor@1.14.1"], ["Knit", "sleitnick/knit@1.4.7"], ["Loader", "sleitnick/loader@1.0.2"], ["ProfileService", "brittonfischer/profileservice@2.1.5"], ["Promise", "evaera/promise@4.0.0"], ["Remote", "sleitnick/remote@1.0.4"], ["Signal", "sleitnick/signal@1.2.0"], ["TableUtil", "finobinos/tableutil@3.2.1"], ["TestEZ", "roblox/testez@0.4.1"], ["TopbarPlus", "developercron/icon@0.1.0"], ["matter", "evaera/matter@0.5.1"], ["t", "osyrisrblx/t@3.0.0"]]
 
 [[package]]
 name = "developercron/icon"
@@ -61,11 +61,6 @@ dependencies = []
 name = "sleitnick/comm"
 version = "0.3.0"
 dependencies = [["Option", "sleitnick/option@1.0.3"], ["Promise", "evaera/promise@4.0.0"], ["Signal", "sleitnick/signal@1.2.0"]]
-
-[[package]]
-name = "sleitnick/enum-list"
-version = "2.0.1"
-dependencies = []
 
 [[package]]
 name = "sleitnick/knit"
