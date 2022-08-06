@@ -7,19 +7,20 @@
 --]]
 
 -- died trying to silence Roblox Types
-
 local playerUtil = {}
 
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local t = require(ReplicatedStorage.Packages.t)
 local Promise = require(ReplicatedStorage.Packages.Promise)
 local Janitor = require(ReplicatedStorage.Packages.Janitor)
 local remote = require(script.Parent.remote)
 local Signal = require(ReplicatedStorage.Packages.Signal)
 local TableUtil = require(ReplicatedStorage.Packages.TableUtil)
-
+local deb = require(script.Parent.debounce)
+local ProfileService = require(ReplicatedStorage.Packages.ProfileService)
 local isClient = RunService:IsClient()
 
 local registry = {
@@ -27,7 +28,14 @@ local registry = {
 	callbacks = {},
 	allCache = {},
 	allLocalCache = {},
-} -- cache
+	client = {}
+} :: {
+	clients : {[Player]: mt},
+	client: mt,
+	allLocalCache : {any},
+	callbacks: {{ callback: (mt) -> (), priority: number }},
+	allCache: {any},
+}
 local mt: mt = {}
 
 function mt:__changed(index, value, cache)
@@ -161,13 +169,13 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 			self:editLocal(index, value)
 		end,
 		__index = function(_, index)
-			local response = mt.getLocal(self :: typeof(self), index)
+			local response = mt.getLocal(self :: mt, index)
 			if response ~= nil then
 				return response
 			end
 			return mt[index]
 		end,
-	})
+	}) 
 
 	for _, sig in pairs(self) do
 		if Signal.Is(sig) then
@@ -211,17 +219,12 @@ local initPlayer = function(player: Player, model: { [any]: any }?)
 		end)
 	end
 
-	print(registry.callbacks)
-
-	return self :: typeof(self) & {
-		client: typeof(self.client) & { changed: typeof(Signal.new()) },
-		server: typeof(self.server) & { changed: typeof(Signal.new()) },
-	} & mt
+	return self :: mt
 end
 
-export type mt = typeof(initPlayer(Instance.new("Player"))) & typeof(mt)
+mt.__index = mt
 
-playerUtil.observe = function(callback: (mt) -> (), priority: number?)
+playerUtil.observe = function(callback: (playerObject: mt) -> (), priority: number?)
 	--table.insert(registry.callbacks, callback)
 	if not priority then
 		table.insert(registry.callbacks, {
@@ -291,15 +294,11 @@ local __mt = {
 						end)
 					)
 				end
+				return _self
 			end
 		end
 		return
 	end,
-}
-type __mt = {
-	editLocal: ({}, any, any) -> __mt,
-	edit: ({}, any, any) -> __mt,
-	iterate: ({}, (playerObject: mt) -> ()) -> __mt,
 }
 
 local exceptArray = function(t1, t2)
@@ -332,28 +331,35 @@ local convert = function(plrs)
 	return tb
 end
 
-playerUtil.all = function(): __mt
+playerUtil.all = function()
 	assert(not isClient, "all is not accessible on the client")
-	return setmetatable({ target = registry.clients }, __mt)
+	return setmetatable({ target = registry.clients }, __mt) :: __mt
 end
 
-playerUtil.single = function(player: Player): mt
+playerUtil.single = function(player: Player)
 	assert(not isClient, "all is not accessible on the client")
 	assert(t.instanceIsA("Player")(player), "Player expected")
 	return registry.clients[player :: Player] :: mt
 end
 
-playerUtil.some = function(players: { Player? }): __mt
+playerUtil.some = function(players: { Player? })
 	assert(not isClient, "all is not accessible on the client")
-	return setmetatable({ target = convert(players) }, __mt)
+	return setmetatable({ target = convert(players) :: mt }, __mt) ::  __mt
 end
 
-playerUtil.except = function(players: { Player? }): __mt
+playerUtil.except = function(players: { Player? })
 	assert(not isClient, "all is not accessible on the client")
-	return setmetatable({ target = except(registry.clients, convert(players)) }, __mt)
+	return setmetatable({ target = except(registry.clients, convert(players)) }, __mt) :: __mt
 end
 
 local init = function()
+	Promise.new(function(resolve)
+		playerUtil.observe(function(playerObject)
+			playerObject.debounce = deb.newGroup(playerObject.object)
+			playerObject.maid:Add(playerObject.debounce)
+		end, -1)
+		resolve()
+	end)
 	if not isClient then
 		Players.PlayerAdded:Connect(initPlayer)
 		for _, player in Players:GetPlayers() do
@@ -384,8 +390,38 @@ local init = function()
 		initPlayer(Players.LocalPlayer, remote.get("__playerUtil__retrieveClientModel"):Retrieve()) -- yield
 	end
 end
---type p = typeof(initPlayer(Instance.new("Player")))
 
+type __mt = {target: {mt}} & (typeof(setmetatable({}, __mt))) & ({
+	editLocal: ({}, any, any) -> __mt,
+	edit: ({}, any, any) -> __mt,
+	iterate: ({}, (playerObject: mt) -> ()) -> __mt,
+})
+type signal = typeof(Signal.new())
+type janitor = typeof(Janitor.new())
+export type mt = typeof(initPlayer(Instance.new("Player"))) & {
+	debounce: deb.debounceGroup,
+	data: ({
+		storage: {},
+		profile: typeof(ProfileService.GetProfileStore():LoadProfileAsync()),
+		capture: () -> (),
+		listen: () -> (),
+		changed: signal,
+		maid: janitor,
+		player: Player
+	}),
+	localChanged: signal,
+	changed: signal,
+	maid: janitor,
+	object: Player,
+	server: {changed: signal},
+	client: {changed: signal},
+	_properties: {client: {[any]: any}, server: {[any]: any}}
+}
+--[[({
+	editLocal: ({}, any, any) -> __mt,
+	edit: ({}, any, any) -> __mt,
+	iterate: ({}, (playerObject: mt) -> ()) -> __mt,
+})]]
 task.spawn(init)
 
 return playerUtil --[[:: {

@@ -82,7 +82,7 @@ type typesList = {
 	data: typeof(require(script.data)),
 	localization: typeof(require(script.localization)),
 	sound: typeof(require(script.sound)),
-	--debounce: typeof(require(script.debounce)),
+	debounce: typeof(require(script.debounce)),
 }
 
 local __self = setmetatable({
@@ -102,7 +102,7 @@ local __self = setmetatable({
 		data = require(script.data),
 		localization = require(script.localization),
 		sound = require(script.sound),
-		--debounce = require(script.debounce),
+		debounce = require(script.debounce),
 		_getRaw = function(mt)
 			return mt
 		end,

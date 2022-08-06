@@ -49,16 +49,19 @@ function test:KnitStart()
 	end)]]
 	utilities.data.observe(function(playerObject, playerData)
 		print(playerObject, playerObject.data == playerData)
+		playerObject.debounce:make("test", "time", 5)
+		
 	end)
 	task.wait(5)
+	utilities.player.all():iterate(function(playerObject)
+		print(playerObject)
+		utilities.data.capture(playerObject.object, function(storage)
+			storage.Settings[1] = not storage.Settings[1]
+		end)
+	end)
 	for _, player in Players:GetPlayers() do
 		utilities.player.some({ player }):edit("test", 100):edit("some", 50)
-		utilities.player.all():iterate(function(playerObject)
-			print(playerObject)
-			utilities.data.capture(playerObject.object, function(storage)
-				storage.Settings[1] = not storage.Settings[1]
-			end)
-		end)
+		
 		--[[utilities.data.capture(player, function(storage)
 			storage.Money += 50
 			print(storage.Money)

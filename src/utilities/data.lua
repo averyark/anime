@@ -20,8 +20,8 @@ local remote = require(script.Parent.remote)
 
 local isClient = RunService:IsClient()
 
-local dataUtil = {
-	profileStore = nil :: profileStore,
+local dataUtil; dataUtil = {
+	profileStore = nil,
 	name = "testing",
 	list = {},
 	callbacks = {},
@@ -165,10 +165,11 @@ function data.new(player)
 		changed = Signal.new(),
 		maid = Janitor.new(),
 		player = player,
+		storage = {}
 	}, data)
 
-	self.profile:Reconcile()
 	self.storage = self.profile.Data
+	self.profile:Reconcile()
 
 	self.maid:Add(self.player.AncestryChanged:Connect(function()
 		if not player:IsDescendantOf(Players) then
@@ -234,7 +235,7 @@ end
     dataUtil.get(player)
     ```
 ]]
-function dataUtil.get(player: Player): typeof(data.new())
+function dataUtil.get(player: Player): data
 	assert(not isClient, "You cannot use this method on the client")
 	return dataUtil.list[player]
 end
@@ -277,7 +278,7 @@ end
     end)
     ```
 ]]
-function dataUtil.observe(callback: (playerObject: playerUtil.mt, playerData: typeof(data.new())) -> ())
+function dataUtil.observe(callback: (playerObject: playerUtil.mt, playerData: data) -> ())
 	assert(not isClient, "You cannot use this method on the client")
 	table.insert(dataUtil.callbacks, callback)
 	for player, self in dataUtil.list do
@@ -372,6 +373,7 @@ function dataUtil.start(template: { [any]: any }?, name: string?)
 	end
 end
 
+export type data = typeof(data.new())
 type profileStore = typeof(require(ReplicatedStorage.Packages.ProfileService).GetProfileStore("", {}))
 
 return dataUtil

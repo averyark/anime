@@ -18,6 +18,7 @@ TestEZ = "roblox/testez@0.4.1"
 t = "osyrisrblx/t@3.0.0"
 BoatTween = "penguindevs/boattween@1.0.1"
 matter = "evaera/matter@0.5.1"
+EnumList = "sleitnick/enum-list@2.0.1"
 
 [server-dependencies]
 Cmdr = "evaera/cmdr@1.8.4"
